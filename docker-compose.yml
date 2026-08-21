@@ -6,8 +6,11 @@ services:
       POSTGRES_USER: undangan
       POSTGRES_PASSWORD: undangan
       PGDATA: /var/lib/postgresql/data/pgdata
+      TZ: Asia/Jakarta
+      PGTZ: Asia/Jakarta
     volumes:
       - ./Database/data_postgres:/var/lib/postgresql
+      - ./Sql:/docker-entrypoint-initdb.d:ro
     ports:
       - "5432:5432"
     networks:
@@ -22,9 +25,10 @@ services:
     build:
       context: ./Backend
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/undangan
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/undangan?timeZone=Asia/Jakarta
       SPRING_DATASOURCE_USERNAME: undangan
       SPRING_DATASOURCE_PASSWORD: undangan
+      TZ: Asia/Jakarta
       STORAGE_BASE_PATH: /app/storage
       JWT_SECRET: ${JWT_SECRET:-change-me-in-production-use-256-bit-key}
       JWT_EXPIRATION_SECONDS: "86400"
@@ -52,6 +56,7 @@ services:
         VITE_API_BASE_URL: http://localhost:8083
     environment:
       VITE_API_BASE_URL: http://localhost:8083
+      TZ: Asia/Jakarta
     ports:
       - "5173:80"
     networks:
