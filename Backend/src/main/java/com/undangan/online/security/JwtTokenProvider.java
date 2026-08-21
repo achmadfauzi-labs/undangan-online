@@ -2,6 +2,7 @@ package com.undangan.online.security;
 
 import com.undangan.online.config.JwtConfig;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -36,7 +37,7 @@ public class JwtTokenProvider {
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder().verifyWith(key).build().parseSignedClaims(token);
+            Jwts.parser().verifyWith(key).build().parseSignedClaims(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
             return false;
@@ -51,7 +52,7 @@ public class JwtTokenProvider {
         return getClaims(token).getPayload().get(claimName, clazz);
     }
 
-    private Jwts.CompoundJwtParser getClaims(String token) {
-        return Jwts.parserBuilder().verifyWith(key).build().parseSignedClaims(token);
+    private Jws<Claims> getClaims(String token) {
+        return Jwts.parser().verifyWith(key).build().parseSignedClaims(token);
     }
 }
