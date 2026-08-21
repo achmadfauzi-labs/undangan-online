@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Undangan Online — Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1e1b4b;
+  --ink-dim: #6b7280;
+  --bg: #f8f7ff;
+  --surface: #ffffff;
+  --surface-2: #f5f3ff;
+  --border: #e4e2f0;
+  --accent: #4f46e5;
+  --accent-hover: #4338ca;
+  --accent-soft: #eef2ff;
+  --accent-grad: linear-gradient(135deg, #4f46e5, #818cf8);
+  --sidebar-bg: #ffffff;
+  --sidebar-ink: #4b5563;
+  --sidebar-active: #eef2ff;
+  --sidebar-active-text: #4f46e5;
+  --danger: #ef4444;
+  --danger-soft: #fef2f2;
+  --success: #10b981;
+  --success-soft: #ecfdf5;
+  --warn: #f59e0b;
+  --warn-soft: #fffbeb;
+  --radius: 12px;
+  --shadow: 0 4px 20px rgba(79, 70, 229, 0.06), 0 1px 4px rgba(0,0,0,0.03);
+  --shadow-hover: 0 12px 40px rgba(79, 70, 229, 0.10);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{font-family:'Inter',sans-serif; background:var(--bg); color:var(--ink); font-weight:400; font-size:14px; line-height:1.5; -webkit-font-smoothing:antialiased;}
+img{max-width:100%; display:block;}
+button{font-family:inherit; cursor:pointer;}
+input,select,textarea{font-family:inherit;}
+::-webkit-scrollbar{width:6px; height:6px;}
+::-webkit-scrollbar-thumb{background:#d1d5db; border-radius:20px;}
+::-webkit-scrollbar-track{background:transparent;}
+
+#loginScreen{
+  min-height:100vh; display:flex; align-items:center; justify-content:center;
+  background:linear-gradient(145deg, #eef2ff, #e0e7ff);
+  padding:1.5rem;
+}
+.login-card{
+  width:min(92vw,400px); background:var(--surface); padding:2.8rem 2.2rem; border-radius:var(--radius);
+  box-shadow:0 20px 60px rgba(79,70,229,0.15); text-align:center;
+}
+.login-mark{
+  width:64px; height:64px; border-radius:50%; margin:0 auto 1rem; background:var(--accent-grad);
+  display:flex; align-items:center; justify-content:center; font-family:'Inter',sans-serif; color:#fff; font-size:1.6rem; font-weight:700; box-shadow:0 8px 24px rgba(79,70,229,0.25);
+}
+.login-card h1{font-size:1.6rem; font-weight:700; color:var(--ink);}
+.login-card p.sub{color:var(--ink-dim); font-size:.85rem; margin-bottom:1.8rem;}
+.login-opt{
+  display:flex; align-items:center; gap:1rem; text-align:left; width:100%; padding:1rem 1.2rem;
+  border:1px solid var(--border); background:var(--surface-2); border-radius:var(--radius); margin-bottom:.9rem; transition:.25s;
+}
+.login-opt:hover{border-color:var(--accent); background:var(--accent-soft); transform:translateY(-2px); box-shadow:var(--shadow-hover);}
+.login-opt .ico{
+  width:42px; height:42px; border-radius:50%; background:var(--accent-soft); color:var(--accent);
+  display:flex; align-items:center; justify-content:center; flex:none;
+}
+.login-opt b{display:block; font-size:.95rem; font-weight:600; color:var(--ink);}
+.login-opt span{display:block; font-size:.75rem; color:var(--ink-dim); margin-top:.1rem;}
+.login-foot{font-size:.7rem; color:var(--ink-dim); margin-top:1.6rem;}
+
+#app{display:none; min-height:100vh;}
+#app.active{display:flex;}
+.sidebar{
+  width:242px; background:var(--sidebar-bg); color:var(--sidebar-ink); flex:none;
+  display:flex; flex-direction:column; position:fixed; top:0; bottom:0; left:0; z-index:40;
+  transition:transform .35s ease; box-shadow:2px 0 20px rgba(0,0,0,0.03); border-right:1px solid var(--border);
+}
+.sb-brand{display:flex; align-items:center; gap:.7rem; padding:1.4rem 1.3rem 1.1rem; border-bottom:1px solid var(--border);}
+.sb-brand .mark{width:36px; height:36px; border-radius:50%; background:var(--accent-grad); display:flex; align-items:center; justify-content:center; font-weight:700; color:#fff; flex:none; box-shadow:0 4px 12px rgba(79,70,229,0.25);}
+.sb-brand b{font-size:.92rem; color:var(--ink); font-weight:600; display:block;}
+.sb-brand span{font-size:.66rem; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-dim);}
+.sb-role{
+  margin:1rem 1.3rem .3rem; padding:.5rem .8rem; background:var(--surface-2); border:1px solid var(--border); border-radius:40px;
+  font-size:.7rem; letter-spacing:.08em; text-transform:uppercase; color:var(--accent); text-align:center; font-weight:600;
+}
+.sb-menu{flex:1; overflow-y:auto; padding:1rem .7rem;}
+.sb-item{
+  display:flex; align-items:center; gap:.75rem; padding:.65rem .9rem; border-radius:var(--radius);
+  font-size:.85rem; color:var(--sidebar-ink); margin-bottom:.1rem; cursor:pointer; transition:.2s; border:none; background:none; width:100%; text-align:left;
+}
+.sb-item svg{width:18px; height:18px; stroke:currentColor; fill:none; stroke-width:1.5; flex:none;}
+.sb-item:hover{background:var(--sidebar-active); color:var(--ink);}
+.sb-item.active{background:var(--sidebar-active); color:var(--sidebar-active-text); font-weight:600;}
+.sb-item.active svg{stroke:var(--sidebar-active-text);}
+.sb-foot{padding:1rem 1.3rem 1.3rem; border-top:1px solid var(--border);}
+.sb-switch{
+  font-size:.7rem; color:var(--ink-dim); text-align:center; margin-bottom:.7rem; letter-spacing:.04em;
+}
+.sb-switch button{background:none; border:1px solid var(--border); color:var(--ink-dim); font-size:.7rem; padding:.35rem .7rem; border-radius:40px; margin:0 .2rem; transition:.2s;}
+.sb-switch button.on{background:var(--accent); color:#fff; border-color:var(--accent); font-weight:600;}
+.sb-logout{display:flex; align-items:center; gap:.6rem; font-size:.8rem; color:var(--danger); background:none; border:none; width:100%; padding:.5rem; border-radius:var(--radius); transition:.2s;}
+.sb-logout:hover{background:var(--danger-soft);}
+
+.main-area{flex:1; margin-left:242px; min-width:0; display:flex; flex-direction:column;}
+.topbar{
+  height:64px; background:var(--surface); border-bottom:1px solid var(--border);
+  display:flex; align-items:center; justify-content:space-between; padding:0 1.8rem; position:sticky; top:0; z-index:30;
+}
+.tb-left{display:flex; align-items:center; gap:1rem;}
+#hamburger{display:none; background:none; border:none; color:var(--ink);}
+.tb-title{font-size:1.25rem; font-weight:700; color:var(--ink); letter-spacing:-0.01em;}
+.tb-crumb{font-size:.72rem; color:var(--ink-dim); letter-spacing:.05em; margin-top:.05rem;}
+.tb-right{display:flex; align-items:center; gap:1rem;}
+.tb-user{display:flex; align-items:center; gap:.7rem; cursor:pointer;}
+.avatar-sm{width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:.8rem; font-weight:600; color:#fff; flex:none; background:var(--accent-grad); box-shadow:0 4px 12px rgba(79,70,229,0.2);}
+.tb-user-name{font-size:.85rem; font-weight:600; line-height:1.2; color:var(--ink);}
+.tb-user-role{font-size:.65rem; color:var(--ink-dim);}
+
+.content{padding:1.8rem 2rem; flex:1; max-width:1360px; width:100%; margin:0 auto;}
+.page{display:none;}
+.page.active{display:block; animation:fadein .4s ease;}
+@keyframes fadein{from{opacity:0; transform:translateY(8px);}to{opacity:1; transform:translateY(0);}}
+
+.stat-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1.2rem; margin-bottom:1.8rem;}
+.stat-card{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:1.4rem 1.5rem; box-shadow:var(--shadow); transition:.2s;}
+.stat-card:hover{box-shadow:var(--shadow-hover); transform:translateY(-2px);}
+.stat-card .lbl{font-size:.7rem; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-dim);}
+.stat-card .val{font-size:2.2rem; font-weight:700; color:var(--ink); margin-top:.3rem; letter-spacing:-0.02em;}
+.stat-card .sub{font-size:.72rem; color:var(--ink-dim); margin-top:.2rem;}
+.stat-card.accent{border-color:var(--accent); background:linear-gradient(135deg, var(--surface), var(--accent-soft));}
+
+.card{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:1.5rem 1.7rem; margin-bottom:1.4rem; box-shadow:var(--shadow); transition:.2s;}
+.card:hover{box-shadow:var(--shadow-hover);}
+.card-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:1.1rem; flex-wrap:wrap; gap:.6rem;}
+.card-head h3{font-size:1.15rem; font-weight:700; color:var(--ink); letter-spacing:-0.01em;}
+.card-head .hint{font-size:.78rem; color:var(--ink-dim);}
+
+.toolbar{display:flex; gap:.7rem; flex-wrap:wrap; align-items:center; margin-bottom:1.2rem;}
+.search-input{position:relative; flex:1; min-width:200px;}
+.search-input input{width:100%; padding:.6rem .8rem .6rem 2.4rem; border:1px solid var(--border); border-radius:var(--radius); font-size:.85rem; background:var(--surface-2); color:var(--ink); transition:.2s;}
+.search-input input:focus{outline:none; border-color:var(--accent); box-shadow:0 0 0 3px rgba(79,70,229,0.12);}
+.search-input svg{position:absolute; left:.8rem; top:50%; transform:translateY(-50%); width:16px; height:16px; stroke:var(--ink-dim); fill:none; stroke-width:1.8;}
+select.filter-sel{padding:.6rem .8rem; border:1px solid var(--border); border-radius:var(--radius); font-size:.82rem; background:var(--surface-2); color:var(--ink);}
+
+.btn{display:inline-flex; align-items:center; gap:.4rem; border:1px solid var(--border); background:var(--surface); color:var(--ink); padding:.6rem 1.1rem; border-radius:var(--radius); font-size:.8rem; font-weight:500; transition:.25s; box-shadow:0 2px 4px rgba(0,0,0,0.02);}
+.btn svg{width:15px; height:15px; stroke:currentColor; fill:none; stroke-width:1.8;}
+.btn:hover{border-color:var(--accent); color:var(--accent); transform:translateY(-1px); box-shadow:var(--shadow);}
+.btn-primary{background:var(--accent); border-color:var(--accent); color:#fff; font-weight:600;}
+.btn-primary:hover{background:var(--accent-hover); border-color:var(--accent-hover); color:#fff; box-shadow:0 8px 24px rgba(79,70,229,0.25);}
+.btn-success{background:var(--success); border-color:var(--success); color:#fff; font-weight:600;}
+.btn-success:hover{background:#059669; border-color:#059669; color:#fff;}
+.btn-danger{color:var(--danger); border-color:var(--danger-soft);}
+.btn-danger:hover{background:var(--danger-soft); border-color:var(--danger);}
+.btn-ghost{border-color:transparent; background:none; box-shadow:none;}
+.btn-sm{padding:.4rem .7rem; font-size:.72rem;}
+.btn-icon{padding:.4rem; border-radius:50%;}
+
+/* Music player button — improved */
+.play-btn{
+  width:40px; height:40px; border-radius:50%; background:var(--accent-grad);
+  border:none; display:flex; align-items:center; justify-content:center; flex:none;
+  transition:all .2s; box-shadow:0 4px 12px rgba(79,70,229,0.25); color:#fff;
+}
+.play-btn:hover{transform:scale(1.05); box-shadow:0 6px 20px rgba(79,70,229,0.35);}
+.play-btn:active{transform:scale(0.95);}
+.play-btn svg{width:18px; height:18px; fill:#fff; stroke:none;}
+
+table{width:100%; border-collapse:collapse; font-size:.84rem;}
+thead th{text-align:left; padding:.7rem .6rem; font-size:.7rem; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-dim); border-bottom:1px solid var(--border); white-space:nowrap;}
+tbody td{padding:.8rem .6rem; border-bottom:1px solid var(--border); vertical-align:middle;}
+tbody tr:hover{background:var(--surface-2);}
+.table-wrap{overflow-x:auto;}
+.cell-main{font-weight:600; color:var(--ink);}
+.cell-sub{font-size:.72rem; color:var(--ink-dim); margin-top:.1rem;}
+.row-actions{display:flex; gap:.3rem; flex-wrap:wrap; justify-content:flex-end;}
+
+.badge{display:inline-flex; align-items:center; gap:.3rem; font-size:.7rem; padding:.25rem .65rem; border-radius:40px; font-weight:600; letter-spacing:.02em;}
+.badge.success{background:var(--success-soft); color:#059669;}
+.badge.danger{background:var(--danger-soft); color:#dc2626;}
+.badge.warn{background:var(--warn-soft); color:#d97706;}
+.badge.neutral{background:#f3f4f6; color:#6b7280;}
+.badge-dot{width:6px; height:6px; border-radius:50%; background:currentColor;}
+
+.empty-state{text-align:center; padding:2.8rem 1rem; color:var(--ink-dim);}
+.empty-state svg{width:40px; height:40px; stroke:var(--ink-dim); fill:none; stroke-width:1.4; margin-bottom:.6rem;}
+.empty-state p{font-size:.85rem;}
+
+.modal-overlay{position:fixed; inset:0; background:rgba(30,27,75,0.4); display:none; align-items:center; justify-content:center; z-index:100; padding:1.5rem; backdrop-filter:blur(4px);}
+.modal-overlay.show{display:flex;}
+.modal{background:var(--surface); width:min(92vw,600px); max-height:88vh; overflow-y:auto; border-radius:var(--radius); box-shadow:var(--shadow-hover);}
+.modal-head{display:flex; align-items:center; justify-content:space-between; padding:1.2rem 1.5rem; border-bottom:1px solid var(--border);}
+.modal-head h3{font-size:1.2rem; font-weight:700; color:var(--ink);}
+.modal-body{padding:1.5rem;}
+.modal-foot{padding:1rem 1.5rem; border-top:1px solid var(--border); display:flex; justify-content:flex-end; gap:.7rem;}
+
+.form-grid{display:grid; grid-template-columns:1fr 1fr; gap:1.2rem;}
+@media(max-width:520px){.form-grid{grid-template-columns:1fr;}}
+.form-grid .full{grid-column:1/-1;}
+.f-group label{display:block; font-size:.7rem; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-dim); margin-bottom:.3rem;}
+.f-group input,.f-group select,.f-group textarea{
+  width:100%; padding:.6rem .75rem; border:1px solid var(--border); border-radius:var(--radius); font-size:.85rem; color:var(--ink); background:var(--surface-2); transition:.2s;
+}
+.f-group input:focus,.f-group select:focus,.f-group textarea:focus{outline:none; border-color:var(--accent); box-shadow:0 0 0 3px rgba(79,70,229,0.12);}
+.f-group textarea{resize:vertical; min-height:80px;}
+.f-hint{font-size:.68rem; color:var(--ink-dim); margin-top:.3rem;}
+
+.pill-group{display:flex; flex-wrap:wrap; gap:.5rem; margin-bottom:.5rem;}
+.pill-btn{
+  padding:.45rem 1rem; border-radius:40px; border:1px solid var(--border); background:var(--surface-2);
+  font-size:.78rem; font-weight:500; color:var(--ink-dim); transition:.2s; cursor:pointer;
+}
+.pill-btn:hover{border-color:var(--accent); color:var(--accent); background:var(--accent-soft);}
+.pill-btn.active{background:var(--accent); border-color:var(--accent); color:#fff; box-shadow:0 4px 12px rgba(79,70,229,0.25);}
+.pill-btn.active:hover{background:var(--accent-hover);}
+
+.section-divider{border:none; border-top:1px solid var(--border); margin:1.2rem 0;}
+
+.banner{display:flex; align-items:center; gap:1.2rem; padding:1rem 1.4rem; border-radius:var(--radius); margin-bottom:1.2rem; border:1px solid var(--border); background:var(--surface); box-shadow:var(--shadow);}
+.banner svg{width:26px; height:26px; stroke:currentColor; fill:none; stroke-width:1.6; flex:none;}
+.banner.status-draft{background:var(--warn-soft); color:var(--warn); border-color:transparent;}
+.banner.status-publikasi{background:var(--success-soft); color:var(--success); border-color:transparent;}
+.banner.status-selesai{background:#f3f4f6; color:#6b7280; border-color:transparent;}
+.banner b{display:block; font-size:.92rem; color:var(--ink);}
+.banner span{font-size:.76rem; opacity:.85;}
+.banner .grow{flex:1;}
+
+.cd-mini{display:flex; gap:.6rem; flex-wrap:wrap;}
+.cd-mini div{background:var(--surface-2); border:1px solid var(--border); border-radius:var(--radius); padding:.6rem .3rem; width:64px; text-align:center;}
+.cd-mini .n{font-size:1.5rem; font-weight:700; color:var(--accent); letter-spacing:-0.02em;}
+.cd-mini .l{font-size:.6rem; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-dim);}
+
+.link-box{display:flex; gap:.6rem; align-items:center; background:var(--surface-2); border:1px solid var(--border); border-radius:var(--radius); padding:.6rem .9rem;}
+.link-box code{flex:1; font-size:.8rem; overflow-x:auto; white-space:nowrap; color:var(--ink-dim);}
+
+.upload-box{
+  border:1.5px dashed var(--border); border-radius:var(--radius); padding:1.6rem; text-align:center; cursor:pointer; transition:.25s; position:relative; background:var(--surface-2);
+}
+.upload-box:hover{border-color:var(--accent); background:var(--accent-soft);}
+.upload-box svg{width:28px; height:28px; stroke:var(--ink-dim); fill:none; stroke-width:1.5; margin-bottom:.5rem;}
+.upload-box p{font-size:.8rem; color:var(--ink-dim);}
+.upload-box input{position:absolute; inset:0; opacity:0; cursor:pointer;}
+.photo-preview{width:100%; aspect-ratio:1/1; object-fit:cover; border-radius:var(--radius); border:1px solid var(--border); background:var(--surface-2);}
+
+.gal-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:1rem; margin-top:1rem;}
+.gal-card{border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; background:var(--surface);}
+.gal-card img{width:100%; aspect-ratio:1/1; object-fit:cover;}
+.gal-card .gc-body{padding:.6rem .7rem;}
+.gal-card input{border:none; font-size:.75rem; width:100%; padding:.2rem 0; background:transparent; color:var(--ink);}
+.gal-card input:focus{outline:none; border-bottom:1px solid var(--accent);}
+.gal-card .gc-actions{display:flex; justify-content:flex-end; padding:0 .5rem .5rem;}
+
+.tmpl-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:1rem; margin-top:1rem;}
+.tmpl-card{border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; background:var(--surface); transition:.25s; box-shadow:var(--shadow);}
+.tmpl-card.selected{border-color:var(--accent); box-shadow:0 0 0 3px rgba(79,70,229,0.15);}
+.tmpl-thumb{height:130px; position:relative;}
+.tmpl-thumb::after{content:attr(data-cat); position:absolute; top:.5rem; left:.5rem; background:rgba(30,27,75,0.5); color:#fff; font-size:.6rem; font-weight:600; padding:.2rem .6rem; border-radius:40px; text-transform:uppercase; letter-spacing:.05em; backdrop-filter:blur(4px);}
+.tmpl-body{padding:.9rem 1rem;}
+.tmpl-body b{font-size:.85rem; display:block; color:var(--ink);}
+.tmpl-body .code{font-size:.7rem; color:var(--ink-dim);}
+.tmpl-foot{display:flex; gap:.5rem; padding:0 1rem 1rem;}
+
+.music-row{display:flex; align-items:center; gap:.9rem; padding:.9rem; border:1px solid var(--border); border-radius:var(--radius); margin-bottom:.7rem; background:var(--surface-2); transition:.2s;}
+.music-row.selected{border-color:var(--accent); background:var(--accent-soft); box-shadow:0 0 0 2px rgba(79,70,229,0.08);}
+.music-info{flex:1; min-width:0;}
+.music-info b{font-size:.85rem; display:block; color:var(--ink);}
+.music-info span{font-size:.72rem; color:var(--ink-dim);}
+
+.wish-summary{display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:.8rem; margin-bottom:1.4rem;}
+.wish-summary .sc{background:var(--surface-2); border:1px solid var(--border); border-radius:var(--radius); padding:.9rem; text-align:center;}
+.wish-summary .sc .n{font-size:1.7rem; font-weight:700; color:var(--ink); letter-spacing:-0.02em;}
+.wish-summary .sc .l{font-size:.65rem; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-dim);}
+
+.toast-wrap{position:fixed; top:1.2rem; right:1.2rem; z-index:200; display:flex; flex-direction:column; gap:.6rem;}
+.toast{background:var(--ink); color:#fff; padding:.8rem 1.2rem; border-radius:var(--radius); font-size:.82rem; box-shadow:var(--shadow-hover); display:flex; align-items:center; gap:.6rem; animation:toastin .3s ease;}
+.toast svg{width:16px; height:16px; stroke:#818cf8; fill:none; stroke-width:2;}
+@keyframes toastin{from{opacity:0; transform:translateX(20px);}to{opacity:1; transform:translateX(0);}}
+
+.session-item{display:flex; gap:.8rem; align-items:flex-start; padding:1rem; border:1px solid var(--border); border-radius:var(--radius); background:var(--surface-2); margin-bottom:.8rem; flex-wrap:wrap;}
+.session-item .session-fields{flex:1; min-width:200px; display:grid; grid-template-columns:1fr 1fr; gap:.6rem;}
+.session-item .session-fields .full{grid-column:1/-1;}
+.session-item .session-actions{display:flex; gap:.3rem; align-items:center;}
+@media(max-width:600px){.session-item .session-fields{grid-template-columns:1fr;}}
+@media(max-width:900px){.sidebar{transform:translateX(-100%);}.sidebar.open{transform:translateX(0);}.main-area{margin-left:0;}#hamburger{display:block;}}
+
+.param-filter-grid{display:flex; gap:.8rem; flex-wrap:wrap; align-items:center; margin-bottom:1rem;}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="login-mark">UO</div>
+    <h1>Undangan Online</h1>
+    <p class="sub">Pilih peran untuk masuk ke dashboard demo</p>
+    <button class="login-opt" onclick="loginAs('admin')">
+      <span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 2 4 5v6c0 5 3.4 9 8 11 4.6-2 8-6 8-11V5l-8-3z"/></svg></span>
+      <span><b>Masuk sebagai Super Admin</b><span>Kelola client, user, template & sistem (Web 1)</span></span>
+    </button>
+    <button class="login-opt" onclick="loginAs('client')">
+      <span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M20 21c0-4-3.6-6-8-6s-8 2-8 6"/><circle cx="12" cy="7" r="4"/></svg></span>
+      <span><b>Masuk sebagai Client</b><span>Kelola undangan pribadi Anda (Web 2)</span></span>
+    </button>
+    <p class="login-foot">Demo interaktif — data bersifat sementara & tidak tersimpan ke server</p>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-brand"><div class="mark">UO</div><div><b>Undangan Online</b><span id="sbSubtitle">Web 1 · Admin</span></div></div>
+    <div class="sb-role" id="sbRoleLabel">SUPER ADMIN</div>
+    <nav class="sb-menu" id="sbMenu"></nav>
+    <div class="sb-foot">
+      <div class="sb-switch">Lihat sebagai <button id="swAdmin" onclick="switchRole('admin')">Admin</button><button id="swClient" onclick="switchRole('client')">Client</button></div>
+      <button class="sb-logout" onclick="logout()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg> Keluar</button>
+    </div>
+  </aside>
+
+  <div class="main-area">
+    <header class="topbar">
+      <div class="tb-left">
+        <button id="hamburger" onclick="document.getElementById('sidebar').classList.toggle('open')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+        <div><div class="tb-title" id="pageTitle">Dashboard</div><div class="tb-crumb" id="pageCrumb">Ringkasan</div></div>
+      </div>
+      <div class="tb-right">
+        <div class="tb-user" onclick="showPage('profile')">
+          <div class="avatar-sm" id="tbAvatar">SA</div>
+          <div><div class="tb-user-name" id="tbUserName">Super Admin</div><div class="tb-user-role" id="tbUserRole">admin@undanganonline.id</div></div>
+        </div>
+      </div>
+    </header>
+    <div class="content" id="content"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay"><div class="modal" id="modalBox"></div></div>
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+/* =========================================================================
+   MOCK DATA
+========================================================================= */
+let state = {
+  role: 'admin',
+  activePage: 'dashboard',
+
+  clients: [
+    {id:1, code:'CLT-0001', nama:'Kirana Ayu R.', telp:'0812xxxxxx01', perusahaan:'-', alamat:'Yogyakarta', tglAktivasi:'2026-08-01', durasi:6, tglKadaluarsa:'2027-02-01', status:'active', catatan:'Paket Gold'},
+    {id:2, code:'CLT-0002', nama:'Reza & Salma', telp:'0813xxxxxx02', perusahaan:'-', alamat:'Bandung', tglAktivasi:'2026-06-15', durasi:3, tglKadaluarsa:'2026-09-15', status:'active', catatan:''},
+    {id:3, code:'CLT-0003', nama:'Fajar Nugroho', telp:'0821xxxxxx03', perusahaan:'-', alamat:'Surabaya', tglAktivasi:'2026-02-01', durasi:6, tglKadaluarsa:'2026-08-01', status:'inactive', catatan:'Sudah lewat masa aktif'},
+    {id:4, code:'CLT-0004', nama:'Dewi Anggraini', telp:'0822xxxxxx04', perusahaan:'-', alamat:'Semarang', tglAktivasi:'2026-08-10', durasi:6, tglKadaluarsa:'2027-02-10', status:'active', catatan:''},
+  ],
+
+  users: [
+    {id:1, username:'superadmin', email:'admin@undanganonline.id', nama:'Super Admin', telp:'0811xxxxxxx', role:'ADMIN', clientId:null, color:'#4f46e5', status:'active'},
+    {id:2, username:'staff1', email:'staff1@undanganonline.id', nama:'Rima Oktavia', telp:'0812xxxxxxx', role:'STAFF', clientId:null, color:'#10b981', status:'active'},
+    {id:3, username:'kirana', email:'kirana@mail.com', nama:'Kirana Ayu R.', telp:'0812xxxxxx01', role:'USER', clientId:1, color:'#8b5cf6', status:'active'},
+    {id:4, username:'rezasalma', email:'reza.salma@mail.com', nama:'Reza & Salma', telp:'0813xxxxxx02', role:'USER', clientId:2, color:'#f59e0b', status:'active'},
+  ],
+
+  roles: [
+    {code:'ADMIN', nama:'Administrator', deskripsi:'Akses penuh ke seluruh sistem', isSystem:true, permissions:['dashboard','clients','users','guests','roles','params','templates','music']},
+    {code:'STAFF', nama:'Staff / Operator', deskripsi:'Mengelola client dan undangan', isSystem:false, permissions:['dashboard','clients','guests']},
+    {code:'USER', nama:'Client', deskripsi:'Akses ke undangan miliknya sendiri', isSystem:true, permissions:['dashboard','event','gallery','customize','guestbook','clientguests']},
+  ],
+
+  menuDefs: [
+    {key:'dashboard', label:'Dashboard'},
+    {key:'clients', label:'Manajemen Client'},
+    {key:'users', label:'Manajemen User'},
+    {key:'guests', label:'Manajemen Tamu'},
+    {key:'roles', label:'Manajemen Role'},
+    {key:'params', label:'Parameter Sistem'},
+    {key:'templates', label:'Template Undangan'},
+    {key:'music', label:'Library Musik'},
+    {key:'event', label:'Halaman Acara'},
+    {key:'gallery', label:'Galeri Foto'},
+    {key:'customize', label:'Tema & Musik'},
+    {key:'guestbook', label:'Buku Tamu'},
+    {key:'clientguests', label:'Daftar Tamu'},
+  ],
+
+  params: [
+    {id:1, group:'EVENT_TYPE', code:'PERNIKAHAN', nama:'Pernikahan', order:1, status:'active'},
+    {id:2, group:'EVENT_TYPE', code:'LAMARAN', nama:'Lamaran / Tunangan', order:2, status:'active'},
+    {id:3, group:'EVENT_TYPE', code:'SUNATAN', nama:'Sunatan / Khitanan', order:3, status:'active'},
+    {id:4, group:'EVENT_TYPE', code:'ULTAH', nama:'Ulang Tahun', order:4, status:'active'},
+    {id:5, group:'EVENT_TYPE', code:'AQIQAH', nama:'Aqiqah', order:5, status:'active'},
+    {id:6, group:'GUEST_CATEGORY', code:'KELUARGA', nama:'Keluarga', order:1, status:'active'},
+    {id:7, group:'GUEST_CATEGORY', code:'TEMAN', nama:'Teman', order:2, status:'active'},
+    {id:8, group:'GUEST_CATEGORY', code:'KANTOR', nama:'Rekan Kantor', order:3, status:'active'},
+    {id:9, group:'GUEST_CATEGORY', code:'VIP', nama:'VIP', order:4, status:'active'},
+    {id:10, group:'SETTING', code:'MAX_MUSIC_SIZE_MB', nama:'Batas musik (MB)', order:1, status:'active'},
+    {id:11, group:'SETTING', code:'ALLOWED_IMG_EXT', nama:'Ekstensi gambar', order:2, status:'active'},
+  ],
+
+  templates: [
+    {id:1, code:'TPL-ELEGAN', nama:'Elegan Gold', kategori:'luxury', status:'active', grad:'linear-gradient(135deg,#fef3c7,#fcd34d)', html:'<div>Template Elegan</div>'},
+    {id:2, code:'TPL-MODERN', nama:'Modern Teal', kategori:'minimalist', status:'active', grad:'linear-gradient(135deg,#ccfbf1,#5eead4)', html:'<div>Template Modern</div>'},
+    {id:3, code:'TPL-BATIK', nama:'Batik Nusantara', kategori:'lainnya', status:'active', grad:'linear-gradient(135deg,#fed7aa,#fb923c)', html:'<div>Template Batik</div>'},
+    {id:4, code:'TPL-SAKURA', nama:'Sakura Romance', kategori:'botanical', status:'active', grad:'linear-gradient(135deg,#fce7f3,#f472b6)', html:'<div>Template Sakura</div>'},
+    {id:5, code:'TPL-NATURE', nama:'Nature Leaf', kategori:'botanical', status:'active', grad:'linear-gradient(135deg,#d1fae5,#34d399)', html:'<div>Template Nature</div>'},
+    {id:6, code:'TPL-WHITE', nama:'White Minimalist', kategori:'minimalist', status:'active', grad:'linear-gradient(135deg,#f3f4f6,#d1d5db)', html:'<div>Template White</div>'},
+  ],
+
+  music: [
+    {id:1, judul:'Perfect (Instrumental)', artis:'Piano Cover', status:'active', playing:false},
+    {id:2, judul:'A Thousand Years', artis:'Strings Version', status:'active', playing:false},
+    {id:3, judul:'Canon in D', artis:'Pachelbel', status:'active', playing:false},
+    {id:4, judul:'River Flows in You', artis:'Yiruma', status:'active', playing:false},
+  ],
+
+  guests: [
+    {id:1, nama:'Ayu Prasetya', kategori:'TEMAN', email:'ayu@mail.com', telp:'0812xxx', status:'hadir', clientCode:'CLT-0001'},
+    {id:2, nama:'Bagas Wirawan', kategori:'KANTOR', email:'bagas@mail.com', telp:'0813xxx', status:'undangan_terkirim', clientCode:'CLT-0001'},
+    {id:3, nama:'Nadia Kusuma', kategori:'KELUARGA', email:'nadia@mail.com', telp:'0821xxx', status:'menunggu', clientCode:'CLT-0002'},
+    {id:4, nama:'Hendra Saputra', kategori:'VIP', email:'hendra@mail.com', telp:'0822xxx', status:'tidak_hadir', clientCode:'CLT-0001'},
+    {id:5, nama:'Sinta Marlina', kategori:'TEMAN', email:'sinta@mail.com', telp:'0823xxx', status:'hadir', clientCode:'CLT-0004'},
+  ],
+
+  invitation: {
+    status:'draft',
+    slug:'kirana-danendra-2026',
+    jenisAcara:'PERNIKAHAN',
+    pesanSambutan:'Dengan memohon rahmat dan ridho Allah SWT, kami bermaksud menyelenggarakan pernikahan putra-putri kami.',
+    cover:null,
+    groom:{nama:'Danendra Wicaksono', nickname:'Danendra', ortu:'Bapak Hendra Wijaya & Ibu Siti Aminah', foto:null},
+    bride:{nama:'Kirana Ayu Ramadhani', nickname:'Kirana', ortu:'Bapak Slamet Riyadi & Ibu Wulandari', foto:null},
+    person:{nama:'Muhammad Farel', nickname:'Farel', ortu:'Bapak Ahmad & Ibu Fatimah', foto:null, anakKe:1},
+    sessions: [
+      {id:10, name:'Akad Nikah', tanggal:'2026-12-12', jam:'08:00', lokasi:'Kediaman Mempelai Wanita, Jl. Melati No. 12, Yogyakarta', maps:'https://maps.google.com'},
+      {id:11, name:'Resepsi', tanggal:'2026-12-12', jam:'11:00 - 14:00', lokasi:'Grand Pillar Ballroom, Jl. Kaliurang KM 8, Yogyakarta', maps:'https://maps.google.com'},
+    ],
+    loveStory: [
+      {id:1, title:'Pertama Bertemu', desc:'Dipertemukan dalam satu organisasi kampus.', tanggal:'2019-05-01'},
+      {id:2, title:'Memulai Hubungan', desc:'Memutuskan untuk menjalani hubungan lebih serius.', tanggal:'2021-03-14'},
+      {id:3, title:'Lamaran', desc:'Sebuah janji suci di hadapan kedua keluarga.', tanggal:'2025-11-02'},
+    ],
+    selectedTemplate:'TPL-ELEGAN',
+    selectedMusic:1,
+  },
+  gallery: [
+    {id:1, caption:'Prewedding — Candi Borobudur', img:null},
+    {id:2, caption:'Liburan — Bromo', img:null},
+    {id:3, caption:'Lamaran — Yogyakarta', img:null},
+  ],
+  wishes: [
+    {id:1, nama:'Ayu Prasetya', attend:'hadir', party:2, msg:'Selamat menempuh hidup baru! Semoga sakinah mawaddah warahmah.', published:true, reply:'Terima kasih banyak Ayu 🤍'},
+    {id:2, nama:'Bagas Wirawan', attend:'hadir', party:1, msg:'Bahagia banget lihat kalian sampai di titik ini!', published:true, reply:''},
+    {id:3, nama:'Nadia Kusuma', attend:'ragu', party:1, msg:'Semoga sakinah mawaddah warahmah, aku usahakan hadir ya.', published:false, reply:''},
+    {id:4, nama:'Hendra Saputra', attend:'tidak_hadir', party:1, msg:'Maaf tidak bisa hadir, doa terbaik untuk kalian berdua.', published:false, reply:''},
+  ],
+  currentUser: {admin:{nama:'Super Admin', email:'admin@undanganonline.id', telp:'0811-0000-0001', username:'superadmin'},
+                client:{nama:'Kirana Ayu Ramadhani', email:'kirana@mail.com', telp:'0812-xxxx-xx01', username:'kirana'}}
+};
+let idc = 100;
+let sessionIdCounter = 20;
+
+/* =========================================================================
+   ICONS
+========================================================================= */
+const ICONS = {
+  dashboard:'<path d="M3 13h8V3H3v10zM13 21h8V11h-8v10zM13 3v6h8V3h-8zM3 21h8v-6H3v6z"/>',
+  clients:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+  users:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/>',
+  guests:'<path d="M4 19V5a2 2 0 0 1 2-2h9l5 5v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><path d="M14 3v5h5"/>',
+  roles:'<path d="M12 2 4 5v6c0 5 3.4 9 8 11 4.6-2 8-6 8-11V5l-8-3z"/>',
+  params:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.6-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.6V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9c.2.6.8 1 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.6 1z"/>',
+  templates:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',
+  music:'<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>',
+  event:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/>',
+  gallery:'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.7"/><path d="m21 15-5-5L5 21"/>',
+  customize:'<circle cx="13.5" cy="6.5" r="0.6"/><path d="M12 2a10 10 0 1 0 0 20c1.5 0 2-1 2-2 0-.7-.3-1.1-.7-1.6-.4-.4-.6-.8-.6-1.4 0-1 .8-1.8 1.8-1.8H16a4 4 0 0 0 4-4c0-4.4-4-8.2-8-8.2z"/>',
+  guestbook:'<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>',
+  profile:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  minus:'<path d="M5 12h14"/>',
+  edit:'<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>',
+  trash:'<path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>',
+  eye:'<path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/>',
+  copy:'<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>',
+  key:'<circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/>',
+  check:'<path d="M20 6 9 17l-5-5"/>',
+  x:'<path d="M18 6 6 18M6 6l12 12"/>',
+  search:'<circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>',
+  link:'<path d="M10 13a5 5 0 0 0 7.5.5l2-2a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7.5-.5l-2 2a5 5 0 0 0 7 7l1-1"/>',
+  upload:'<path d="M12 3v12"/><path d="m7 8 5-5 5 5"/><path d="M5 21h14"/>',
+  play:'<path d="M8 5v14l11-7z"/>',
+  pause:'<path d="M6 4h4v16H6zM14 4h4v16h-4z"/>',
+  logout:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/>',
+  whatsapp:'<path d="M3 21l1.65-3.8a9 9 0 0 1-1.35-8.9A9 9 0 0 1 12 2a9 9 0 0 1 9 9 9 9 0 0 1-4.8 8.7A9 9 0 0 1 7.5 21L3 21z"/><path d="M8 10a2 2 0 0 0 2 2h4a2 2 0 0 0 0-4h-2a2 2 0 0 1 0-4h4"/><path d="M12 6v12"/>',
+  clientguests:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+};
+function icon(name, size){ return `<svg width="${size||17}" height="${size||17}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${ICONS[name]||''}</svg>`; }
+
+/* =========================================================================
+   AUTH / SHELL
+========================================================================= */
+function loginAs(role){
+  state.role = role;
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('app').classList.add('active');
+  applyRole();
+  showPage('dashboard');
+}
+function logout(){
+  document.getElementById('app').classList.remove('active');
+  document.getElementById('loginScreen').style.display='flex';
+}
+function switchRole(role){
+  state.role = role;
+  applyRole();
+  showPage('dashboard');
+}
+function applyRole(){
+  const isAdmin = state.role === 'admin';
+  document.getElementById('sbSubtitle').textContent = isAdmin ? 'Web 1 · Admin' : 'Web 2 · Client';
+  document.getElementById('sbRoleLabel').textContent = isAdmin ? 'SUPER ADMIN' : 'CLIENT · PENGANTIN';
+  document.getElementById('swAdmin').classList.toggle('on', isAdmin);
+  document.getElementById('swClient').classList.toggle('on', !isAdmin);
+  const u = isAdmin ? state.currentUser.admin : state.currentUser.client;
+  document.getElementById('tbUserName').textContent = u.nama;
+  document.getElementById('tbUserRole').textContent = u.email;
+  document.getElementById('tbAvatar').textContent = u.nama.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
+
+  const menuKeys = isAdmin
+    ? ['dashboard','clients','users','guests','roles','params','templates','music']
+    : ['dashboard','event','gallery','customize','guestbook','clientguests'];
+  const sbMenu = document.getElementById('sbMenu');
+  sbMenu.innerHTML = menuKeys.map(k=>{
+    const m = state.menuDefs.find(x=>x.key===k);
+    return `<button class="sb-item" data-key="${k}" onclick="showPage('${k}')">${icon(k,17)}<span>${m.label}</span></button>`;
+  }).join('') + `<button class="sb-item" data-key="profile" onclick="showPage('profile')">${icon('profile',17)}<span>Profil Saya</span></button>`;
+}
+
+const PAGE_TITLES = {
+  dashboard:['Dashboard','Ringkasan sistem'],
+  clients:['Manajemen Client','Kelola seluruh client tersewa'],
+  users:['Manajemen User','Kelola akun pengguna sistem'],
+  guests:['Manajemen Tamu','Daftar tamu dari seluruh client'],
+  roles:['Role & Permission','Atur akses menu per role'],
+  params:['Parameter Sistem','Master data semua kategori'],
+  templates:['Template Undangan','Kelola tema visual undangan + HTML'],
+  music:['Library Musik','Kelola koleksi musik latar'],
+  event:['Halaman Acara','Kelola data acara & sesi'],
+  gallery:['Galeri Foto','Kelola foto kenangan undangan'],
+  customize:['Tema & Musik','Pilih tampilan & musik undangan'],
+  guestbook:['Buku Tamu','Kelola ucapan & konfirmasi kehadiran'],
+  clientguests:['Daftar Tamu','Kelola daftar tamu undangan Anda'],
+  profile:['Profil Saya','Kelola data akun Anda'],
+};
+
+function showPage(key){
+  state.activePage = key;
+  document.querySelectorAll('.sb-item').forEach(el=>el.classList.toggle('active', el.dataset.key===key));
+  document.getElementById('pageTitle').textContent = PAGE_TITLES[key][0];
+  document.getElementById('pageCrumb').textContent = PAGE_TITLES[key][1];
+  document.getElementById('sidebar').classList.remove('open');
+  render(key);
+}
+
+function toast(msg){
+  const wrap = document.getElementById('toastWrap');
+  const el = document.createElement('div');
+  el.className='toast';
+  el.innerHTML = icon('check',16)+`<span>${msg}</span>`;
+  wrap.appendChild(el);
+  setTimeout(()=>{ el.style.opacity='0'; el.style.transition='.3s'; setTimeout(()=>el.remove(),300); }, 2600);
+}
+function openModal(title, bodyHtml, footHtml){
+  document.getElementById('modalBox').innerHTML = `
+    <div class="modal-head"><h3>${title}</h3><button class="btn btn-ghost btn-icon" onclick="closeModal()">${icon('x',16)}</button></div>
+    <div class="modal-body">${bodyHtml}</div>
+    ${footHtml ? `<div class="modal-foot">${footHtml}</div>` : ''}
+  `;
+  document.getElementById('modalOverlay').classList.add('show');
+}
+function closeModal(){ document.getElementById('modalOverlay').classList.remove('show'); }
+
+function statusBadge(status){
+  const map = {
+    active:['success','Aktif'], inactive:['danger','Nonaktif'],
+    draft:['warn','Draft'], publikasi:['success','Publikasi'], selesai:['neutral','Selesai'],
+    hadir:['success','Hadir'], tidak_hadir:['danger','Tidak Hadir'], ragu:['warn','Ragu-ragu'],
+    menunggu:['neutral','Menunggu'], undangan_terkirim:['warn','Terkirim'],
+  };
+  const [cls,label] = map[status] || ['neutral', status];
+  return `<span class="badge ${cls}"><span class="badge-dot"></span>${label}</span>`;
+}
+function getClientCode(){
+  const user = state.users.find(u=>u.username==='kirana');
+  if(!user) return 'CLT-0001';
+  const client = state.clients.find(c=>c.id===user.clientId);
+  return client ? client.code : 'CLT-0001';
+}
+function getClientGuests(){
+  const code = getClientCode();
+  return state.guests.filter(g=>g.clientCode===code);
+}
+function render(key){
+  const c = document.getElementById('content');
+  const fns = {
+    dashboard: state.role==='admin' ? renderAdminDashboard : renderClientDashboard,
+    clients: renderClients, users: renderUsers, guests: renderGuests,
+    roles: renderRoles, params: renderParams, templates: renderTemplates, music: renderMusic,
+    event: renderEvent, gallery: renderGallery, customize: renderCustomize, guestbook: renderGuestbook,
+    clientguests: renderClientGuests,
+    profile: renderProfile,
+  };
+  c.innerHTML = `<div class="page active" id="pg-${key}"></div>`;
+  (fns[key]||renderAdminDashboard)();
+}
+
+/* =========================================================================
+   ADMIN: DASHBOARD
+========================================================================= */
+function renderAdminDashboard(){
+  const totalClient = state.clients.length;
+  const activeClient = state.clients.filter(c=>c.status==='active').length;
+  const totalUndangan = state.clients.length;
+  const published = 2;
+  document.getElementById(`pg-dashboard`).innerHTML = `
+    <div class="stat-grid">
+      <div class="stat-card accent"><div class="lbl">Total Client</div><div class="val">${totalClient}</div><div class="sub">Terdaftar di sistem</div></div>
+      <div class="stat-card"><div class="lbl">Client Aktif</div><div class="val">${activeClient}</div><div class="sub">Masa aktif berjalan</div></div>
+      <div class="stat-card"><div class="lbl">Total Undangan</div><div class="val">${totalUndangan}</div><div class="sub">Seluruh client</div></div>
+      <div class="stat-card"><div class="lbl">Terpublikasi</div><div class="val">${published}</div><div class="sub">Status publikasi</div></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><h3>Client Terbaru</h3><button class="btn btn-sm" onclick="showPage('clients')">Lihat Semua</button></div>
+      <div class="table-wrap"><table><thead><tr><th>Kode</th><th>Nama</th><th>Status</th><th>Kadaluarsa</th></tr></thead>
+      <tbody>${state.clients.slice(0,4).map(c=>`<tr><td>${c.code}</td><td class="cell-main">${c.nama}</td><td>${statusBadge(c.status)}</td><td>${c.tglKadaluarsa}</td></tr>`).join('')}</tbody></table></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><h3>Undangan Terbaru</h3></div>
+      <div class="table-wrap"><table><thead><tr><th>Nama Undangan</th><th>Client</th><th>Status</th></tr></thead>
+      <tbody><tr><td class="cell-main">Kirana & Danendra</td><td>CLT-0001</td><td>${statusBadge('draft')}</td></tr>
+      <tr><td class="cell-main">Reza & Salma</td><td>CLT-0002</td><td>${statusBadge('publikasi')}</td></tr>
+      <tr><td class="cell-main">Fajar & Intan</td><td>CLT-0003</td><td>${statusBadge('selesai')}</td></tr></tbody></table></div>
+    </div>
+  `;
+}
+
+/* =========================================================================
+   ADMIN: CLIENTS — tanpa username & email
+========================================================================= */
+function renderClients(){
+  const html = `
+    <div class="card">
+      <div class="toolbar">
+        <div class="search-input">${icon('search',15)}<input placeholder="Cari..." oninput="filterTable('clientsTbl', this.value)"></div>
+        <select class="filter-sel" onchange="filterClientStatus(this.value)"><option value="">Semua Status</option><option value="active">Aktif</option><option value="inactive">Nonaktif</option></select>
+        <button class="btn btn-primary" onclick="clientForm()">${icon('plus',15)}Tambah Client</button>
+      </div>
+      <div class="table-wrap"><table id="clientsTbl"><thead><tr><th>Kode</th><th>Client</th><th>Kontak</th><th>Masa Aktif</th><th>Status</th><th>Aksi</th></tr></thead>
+      <tbody>${state.clients.map(c=>`<tr data-search="${(c.nama+c.telp+c.code).toLowerCase()}" data-status="${c.status}">
+        <td>${c.code}</td>
+        <td><div class="cell-main">${c.nama}</div><div class="cell-sub">${c.perusahaan!=='-'?c.perusahaan:c.alamat}</div></td>
+        <td><div>${c.telp}</div></td>
+        <td><div class="cell-sub">Aktivasi: ${c.tglAktivasi}</div><div class="cell-sub">Berakhir: ${c.tglKadaluarsa}</div></td>
+        <td>${statusBadge(c.status)}</td>
+        <td><div class="row-actions">
+          <button class="btn btn-sm btn-icon" onclick="clientForm(${c.id})">${icon('edit',14)}</button>
+          <button class="btn btn-sm btn-icon" onclick="toggleClientStatus(${c.id})">${icon(c.status==='active'?'x':'check',14)}</button>
+        </div></td>
+      </tr>`).join('')}</tbody></table></div>
+      <div class="f-hint" style="margin-top:.5rem;">* Client adalah pelanggan (pengantin/pemilik acara). Untuk login, buat User terpisah dan pilih client yang sesuai.</div>
+    </div>
+  `;
+  document.getElementById('pg-clients').innerHTML = html;
+}
+function filterTable(tblId, q){ q=q.toLowerCase(); document.querySelectorAll(`#${tblId} tbody tr`).forEach(tr=>{ tr.style.display=(tr.dataset.search||'').includes(q)?'':'none'; }); }
+function filterClientStatus(v){ document.querySelectorAll('#clientsTbl tbody tr').forEach(tr=>{ tr.style.display=(!v||tr.dataset.status===v)?'':'none'; }); }
+function toggleClientStatus(id){ const c=state.clients.find(x=>x.id===id); c.status=c.status==='active'?'inactive':'active'; renderClients(); toast(`Status client ${c.nama} diperbarui`); }
+function clientForm(id){
+  const c=id?state.clients.find(x=>x.id===id):null;
+  const body=`<div class="form-grid">
+    <div class="f-group"><label>Nama Client</label><input id="mNama" value="${c?c.nama:''}"></div>
+    <div class="f-group"><label>Telepon</label><input id="mTelp" value="${c?c.telp:''}"></div>
+    <div class="f-group full"><label>Alamat</label><input id="mAlamat" value="${c?c.alamat:''}"></div>
+    <div class="f-group"><label>Tanggal Aktivasi</label><input type="date" id="mTgl" value="${c?c.tglAktivasi:'2026-08-20'}"></div>
+    <div class="f-group"><label>Durasi (bulan)</label><input type="number" id="mDurasi" value="${c?c.durasi:6}"></div>
+    <div class="f-group full"><label>Catatan</label><textarea id="mCatatan">${c?c.catatan:''}</textarea></div>
+    <div class="f-group full"><span class="f-hint">⚠️ Client hanya data pelanggan. Untuk akses login, buat User di menu Manajemen User.</span></div>
+  </div>`;
+  const foot=`<button class="btn" onclick="closeModal()">Batal</button><button class="btn btn-primary" onclick="saveClient(${id||'null'})">Simpan</button>`;
+  openModal(id?'Edit Client':'Tambah Client', body, foot);
+}
+function saveClient(id){
+  const nama=document.getElementById('mNama').value.trim(); if(!nama) return;
+  const data={nama, telp:document.getElementById('mTelp').value, alamat:document.getElementById('mAlamat').value, tglAktivasi:document.getElementById('mTgl').value, durasi:+document.getElementById('mDurasi').value, catatan:document.getElementById('mCatatan').value, perusahaan:'-'};
+  if(id){ Object.assign(state.clients.find(x=>x.id===id), data); toast('Data client diperbarui'); }
+  else{ idc++; const code='CLT-'+String(state.clients.length+1).padStart(4,'0'); const d=new Date(data.tglAktivasi); d.setMonth(d.getMonth()+data.durasi); state.clients.push({id:idc, code, ...data, tglKadaluarsa:d.toISOString().slice(0,10), status:'active'}); toast('Client baru ditambahkan (buat User terpisah untuk login)'); }
+  closeModal(); renderClients();
+}
+
+/* =========================================================================
+   ADMIN: USERS
+========================================================================= */
+function renderUsers(){
+  document.getElementById('pg-users').innerHTML = `
+    <div class="card">
+      <div class="toolbar">
+        <div class="search-input">${icon('search',15)}<input placeholder="Cari..." oninput="filterTable('usersTbl', this.value)"></div>
+        <button class="btn btn-primary" onclick="userForm()">${icon('plus',15)}Tambah User</button>
+      </div>
+      <div class="table-wrap"><table id="usersTbl"><thead><tr><th>User</th><th>Role</th><th>Client</th><th>Status</th><th>Aksi</th></tr></thead>
+      <tbody>${state.users.map(u=>{const cl=state.clients.find(c=>c.id===u.clientId); return `<tr data-search="${(u.username+u.email+u.nama).toLowerCase()}"><td><div style="display:flex;align-items:center;gap:.6rem;"><div class="avatar-sm" style="background:${u.color};font-size:.68rem;">${u.nama.split(' ').map(w=>w[0]).slice(0,2).join('')}</div><div><div class="cell-main">${u.nama}</div><div class="cell-sub">@${u.username} · ${u.email}</div></div></div></td><td><span class="badge neutral">${u.role}</span></td><td>${cl?cl.code+' — '+cl.nama:'—'}</td><td>${statusBadge(u.status)}</td><td><div class="row-actions"><button class="btn btn-sm btn-icon" onclick="resetPassword('${u.nama}')">${icon('key',14)}</button><button class="btn btn-sm btn-icon" onclick="userForm(${u.id})">${icon('edit',14)}</button><button class="btn btn-sm btn-icon" onclick="deleteUser(${u.id})">${icon('trash',14)}</button></div></td></tr>`}).join('')}</tbody></table></div>
+    </div>`;
+}
+function resetPassword(nama){ toast(`Password untuk ${nama} berhasil direset`); }
+function deleteUser(id){ state.users=state.users.filter(u=>u.id!==id); renderUsers(); toast('User dihapus'); }
+function userForm(id){
+  const u=id?state.users.find(x=>x.id===id):null;
+  const roleOpts=state.roles.map(r=>`<option value="${r.code}" ${u&&u.role===r.code?'selected':''}>${r.nama}</option>`).join('');
+  const clientOpts=state.clients.map(c=>`<option value="${c.id}" ${u&&u.clientId===c.id?'selected':''}>${c.code} — ${c.nama}</option>`).join('');
+  const body=`<div class="form-grid">
+    <div class="f-group"><label>Nama</label><input id="mNama" value="${u?u.nama:''}"></div>
+    <div class="f-group"><label>Username</label><input id="mUsername" value="${u?u.username:''}"></div>
+    <div class="f-group"><label>Email</label><input id="mEmail" value="${u?u.email:''}"></div>
+    <div class="f-group"><label>Telepon</label><input id="mTelp" value="${u?u.telp:''}"></div>
+    <div class="f-group"><label>Password ${u?'(kosongkan jika tidak diubah)':''}</label><input type="password" id="mPass"></div>
+    <div class="f-group"><label>Role</label><select id="mRole">${roleOpts}</select></div>
+    <div class="f-group full"><label>Client (opsional — untuk role USER)</label><select id="mClient"><option value="">— Tidak terkait —</option>${clientOpts}</select></div>
+  </div>`;
+  const foot=`<button class="btn" onclick="closeModal()">Batal</button><button class="btn btn-primary" onclick="saveUser(${id||'null'})">Simpan</button>`;
+  openModal(id?'Edit User':'Tambah User Baru', body, foot);
+}
+function saveUser(id){
+  const nama=document.getElementById('mNama').value.trim(); if(!nama) return;
+  const clientVal=document.getElementById('mClient').value;
+  const data={nama, username:document.getElementById('mUsername').value, email:document.getElementById('mEmail').value, telp:document.getElementById('mTelp').value, role:document.getElementById('mRole').value, clientId:clientVal?+clientVal:null};
+  if(id){ Object.assign(state.users.find(x=>x.id===id), data); toast('User diperbarui'); }
+  else{ idc++; const colors=['#4f46e5','#10b981','#8b5cf6','#f59e0b','#ef4444']; state.users.push({id:idc, ...data, color:colors[idc%colors.length], status:'active'}); toast('User baru ditambahkan'); }
+  closeModal(); renderUsers();
+}
+
+/* =========================================================================
+   ADMIN: GUESTS, ROLES, MUSIC
+========================================================================= */
+function renderGuests(){
+  const clientOpts=['<option value="">Semua Client</option>'].concat(state.clients.map(c=>`<option value="${c.code}">${c.code} — ${c.nama}</option>`)).join('');
+  document.getElementById('pg-guests').innerHTML=`<div class="card"><div class="toolbar"><div class="search-input">${icon('search',15)}<input placeholder="Cari..." oninput="filterTable('guestsTbl', this.value)"></div><select class="filter-sel" onchange="filterGuestClient(this.value)">${clientOpts}</select><button class="btn btn-primary" onclick="guestForm()">${icon('plus',15)}Tambah Tamu</button></div><div class="table-wrap"><table id="guestsTbl"><thead><tr><th>Nama</th><th>Kategori</th><th>Kontak</th><th>Client</th><th>Status</th><th></th></tr></thead><tbody>${state.guests.map(g=>`<tr data-search="${g.nama.toLowerCase()}" data-client="${g.clientCode}"><td class="cell-main">${g.nama}</td><td><span class="badge neutral">${g.kategori}</span></td><td><div>${g.email}</div><div class="cell-sub">${g.telp}</div></td><td>${g.clientCode}</td><td>${statusBadge(g.status)}</td><td><div class="row-actions"><button class="btn btn-sm btn-icon" onclick="deleteGuest(${g.id})">${icon('trash',14)}</button></div></td></tr>`).join('')}</tbody></table></div></div>`;
+}
+function filterGuestClient(v){ document.querySelectorAll('#guestsTbl tbody tr').forEach(tr=>{ tr.style.display=(!v||tr.dataset.client===v)?'':'none'; }); }
+function deleteGuest(id){ state.guests=state.guests.filter(g=>g.id!==id); renderGuests(); toast('Tamu dihapus'); }
+function guestForm(){
+  const catOpts=state.params.filter(p=>p.group==='GUEST_CATEGORY').map(p=>`<option value="${p.code}">${p.nama}</option>`).join('');
+  const clientOpts=state.clients.map(c=>`<option value="${c.code}">${c.code} — ${c.nama}</option>`).join('');
+  const body=`<div class="form-grid"><div class="f-group full"><label>Nama</label><input id="mNama"></div><div class="f-group"><label>Kategori</label><select id="mKategori">${catOpts}</select></div><div class="f-group"><label>Client</label><select id="mClient">${clientOpts}</select></div><div class="f-group"><label>Email</label><input id="mEmail"></div><div class="f-group"><label>Telepon</label><input id="mTelp"></div><div class="f-group full"><label>Catatan</label><textarea id="mCatatan"></textarea></div></div>`;
+  const foot=`<button class="btn" onclick="closeModal()">Batal</button><button class="btn btn-primary" onclick="saveGuest()">Simpan</button>`;
+  openModal('Tambah Tamu', body, foot);
+}
+function saveGuest(){
+  const nama=document.getElementById('mNama').value.trim(); if(!nama) return;
+  idc++; state.guests.push({id:idc, nama, kategori:document.getElementById('mKategori').value, email:document.getElementById('mEmail').value, telp:document.getElementById('mTelp').value, clientCode:document.getElementById('mClient').value, status:'menunggu'});
+  closeModal(); renderGuests(); toast('Tamu ditambahkan');
+}
+
+function renderRoles(){
+  document.getElementById('pg-roles').innerHTML=`<div class="card"><div class="card-head"><h3>Daftar Role</h3><button class="btn btn-primary" onclick="roleForm()">${icon('plus',15)}Tambah Role</button></div><div class="table-wrap"><table><thead><tr><th>Kode</th><th>Nama</th><th>Deskripsi</th><th>Menu</th><th>Tipe</th><th></th></tr></thead><tbody>${state.roles.map(r=>`<tr><td><span class="badge neutral">${r.code}</span></td><td class="cell-main">${r.nama}</td><td class="cell-sub">${r.deskripsi}</td><td>${r.permissions.length}</td><td>${r.isSystem?'<span class="badge warn">Sistem</span>':'<span class="badge neutral">Custom</span>'}</td><td><div class="row-actions"><button class="btn btn-sm btn-icon" onclick="roleForm('${r.code}')">${icon('edit',14)}</button>${!r.isSystem?`<button class="btn btn-sm btn-icon" onclick="deleteRole('${r.code}')">${icon('trash',14)}</button>`:''}</div></td></tr>`).join('')}</tbody></table></div></div>`;
+}
+function deleteRole(code){ state.roles=state.roles.filter(r=>r.code!==code); renderRoles(); toast('Role dihapus'); }
+function roleForm(code){
+  const r=code?state.roles.find(x=>x.code===code):null;
+  const chips=state.menuDefs.map(m=>{const checked=r&&r.permissions.includes(m.key)?'checked':''; return `<div class="chip-check"><input type="checkbox" id="perm-${m.key}" value="${m.key}" ${checked}><label for="perm-${m.key}">${m.label}</label></div>`;}).join('');
+  const body=`<div class="form-grid"><div class="f-group"><label>Kode</label><input id="mCode" value="${r?r.code:''}" ${r?'disabled':''}></div><div class="f-group"><label>Nama</label><input id="mNama" value="${r?r.nama:''}"></div><div class="f-group full"><label>Deskripsi</label><input id="mDesc" value="${r?r.deskripsi:''}"></div><div class="f-group full"><label>Akses Menu</label><div class="chip-group">${chips}</div></div></div>`;
+  const foot=`<button class="btn" onclick="closeModal()">Batal</button><button class="btn btn-primary" onclick="saveRole('${code||''}')">Simpan</button>`;
+  openModal(code?'Edit Role':'Tambah Role', body, foot);
+}
+function saveRole(code){
+  const nama=document.getElementById('mNama').value.trim(); if(!nama) return;
+  const perms=state.menuDefs.map(m=>m.key).filter(k=>document.getElementById('perm-'+k).checked);
+  if(code){ const r=state.roles.find(x=>x.code===code); r.nama=nama; r.deskripsi=document.getElementById('mDesc').value; r.permissions=perms; toast('Role diperbarui'); }
+  else{ const newCode=document.getElementById('mCode').value.trim().toUpperCase(); if(!newCode) return; state.roles.push({code:newCode, nama, deskripsi:document.getElementById('mDesc').value, isSystem:false, permissions:perms}); toast('Role ditambahkan'); }
+  closeModal(); renderRoles();
+}
+
+/* =========================================================================
+   ADMIN: PARAMS — dengan filter category & auto order
+========================================================================= */
+let paramFilterGroup = 'SEMUA';
+function renderParams(){
+  const groups = ['SEMUA', ...new Set(state.params.map(p=>p.group))];
+  const filtered = paramFilterGroup==='SEMUA' ? state.params : state.params.filter(p=>p.group===paramFilterGroup);
+  const rows = filtered.map(p=>`
+    <tr>
+      <td><span class="badge neutral">${p.group}</span></td>
+      <td><span class="badge neutral">${p.code}</span></td>
+      <td class="cell-main">${p.nama}</td>
+      <td>${p.order}</td>
+      <td>${statusBadge(p.status)}</td>
+      <td><div class="row-actions">
+        <button class="btn btn-sm btn-icon" onclick="paramForm(${p.id})">${icon('edit',14)}</button>
+        <button class="btn btn-sm btn-icon" onclick="deleteParam(${p.id})">${icon('trash',14)}</button>
+      </div></td>
+    </tr>
+  `).join('');
+
+  const filterBtns = groups.map(g=>
+    `<button class="pill-btn ${paramFilterGroup===g?'active':''}" onclick="setParamFilter('${g}')">${g}</button>`
+  ).join('');
+
+  document.getElementById('pg-params').innerHTML = `
+    <div class="card">
+      <div class="card-head"><h3>Parameter Sistem</h3><button class="btn btn-primary" onclick="paramForm()">${icon('plus',15)}Tambah Parameter</button></div>
+      <div class="pill-group">${filterBtns}</div>
+      <div class="table-wrap"><table><thead><tr><th>Kelompok</th><th>Kode</th><th>Nama</th><th>Urutan</th><th>Status</th><th></th></tr></thead><tbody>${rows||'<tr><td colspan="6" class="empty-state">Tidak ada parameter</td></tr>'}</tbody></table></div>
+    </div>
+  `;
+}
+function setParamFilter(g){ paramFilterGroup=g; renderParams(); }
+function deleteParam(id){
+  state.params=state.params.filter(p=>p.id!==id);
+  renderParams(); toast('Parameter dihapus');
+}
+function paramForm(id){
+  const p=id?state.params.find(x=>x.id===id):null;
+  const groups = [...new Set(state.params.map(p=>p.group))];
+  const groupOpts = groups.map(g=>`<option value="${g}" ${p&&p.group===g?'selected':''}>${g}</option>`).join('');
+  // Auto order untuk category yang dipilih
+  const selectedGroup = p ? p.group : (groups.length?groups[0]:'');
+  const maxOrder = selectedGroup ? Math.max(0, ...state.params.filter(x=>x.group===selectedGroup).map(x=>x.order)) : 0;
+  const autoOrder = maxOrder + 1;
+
+  const body=`<div class="form-grid">
+    <div class="f-group"><label>Kelompok</label><select id="mGroup" onchange="updateParamOrder()">${groupOpts}</select></div>
+    <div class="f-group"><label>Kode</label><input id="mCode" value="${p?p.code:''}"></div>
+    <div class="f-group"><label>Nama</label><input id="mNama" value="${p?p.nama:''}"></div>
+    <div class="f-group"><label>Urutan <span class="f-hint" style="display:inline;">(auto)</span></label><input type="number" id="mOrder" value="${p?p.order:autoOrder}"></div>
+  </div>
+  <script>
+    function updateParamOrder(){
+      const grp = document.getElementById('mGroup').value;
+      const max = Math.max(0, ...state.params.filter(x=>x.group===grp).map(x=>x.order));
+      document.getElementById('mOrder').value = max + 1;
+    }
+  <\/script>
+  `;
+  const foot=`<button class="btn" onclick="closeModal()">Batal</button><button class="btn btn-primary" onclick="saveParam(${id||'null'})">Simpan</button>`;
+  openModal(id?'Edit Parameter':'Tambah Parameter', body, foot);
+}
+function saveParam(id){
+  const nama=document.getElementById('mNama').value.trim(); if(!nama) return;
+  const group=document.getElementById('mGroup').value;
+  const orderVal = parseInt(document.getElementById('mOrder').value) || 1;
+  const data={group, code:document.getElementById('mCode').value.toUpperCase(), nama, order:orderVal, status:'active'};
+  if(id){ Object.assign(state.params.find(x=>x.id===id), data); toast('Parameter diperbarui'); }
+  else{ idc++; state.params.push({id:idc, ...data}); toast('Parameter ditambahkan'); }
+  closeModal(); renderParams();
+}
+// Expose for inline onchange
+window.updateParamOrder = function(){
+  const grp = document.getElementById('mGroup').value;
+  const max = Math.max(0, ...state.params.filter(x=>x.group===grp).map(x=>x.order));
+  document.getElementById('mOrder').value = max + 1;
+};
+
+/* =========================================================================
+   ADMIN: TEMPLATES
+========================================================================= */
+function renderTemplates(){
+  document.getElementById('pg-templates').innerHTML = `
+    <div class="card">
+      <div class="card-head"><h3>Template Tersedia</h3><button class="btn btn-primary" onclick="templateForm()">${icon('plus',15)}Tambah Template</button></div>
+      <div class="tmpl-grid">${state.templates.map(t=>`
+        <div class="tmpl-card">
+          <div class="tmpl-thumb" data-cat="${t.kategori}" style="background:${t.grad};"></div>
+          <div class="tmpl-body"><b>${t.nama}</b><span class="code">${t.code}</span></div>
+          <div class="tmpl-foot">
+            <button class="btn btn-sm" style="flex:1" onclick="toast('Preview ${t.code}')">${icon('eye',13)}Preview</button>
+            <button class="btn btn-sm btn-icon" onclick="templateForm('${t.code}')">${icon('edit',13)}</button>
+            <button class="btn btn-sm btn-icon" onclick="toggleTemplateStatus('${t.code}')">${icon(t.status==='active'?'x':'check',13)}</button>
+          </div>
+        </div>`).join('')}</div>
+    </div>`;
+}
+function toggleTemplateStatus(code){
+  const t=state.templates.find(x=>x.code===code);
+  if(t){ t.status=t.status==='active'?'inactive':'active'; renderTemplates(); toast(`Template ${t.nama} ${t.status==='active'?'diaktifkan':'dinonaktifkan'}`); }
+}
+function templateForm(code){
+  const t=code?state.templates.find(x=>x.code===code):null;
+  const catOpts=['minimalist','botanical','luxury','lainnya'].map(c=>`<option value="${c}" ${t&&t.kategori===c?'selected':''}>${c}</option>`).join('');
+  const body=`<div class="form-grid">
+    <div class="f-group"><label>Kode Template</label><input id="tmplCode" value="${t?t.code:''}" ${t?'disabled':''}></div>
+    <div class="f-group"><label>Nama</label><input id="tmplNama" value="${t?t.nama:''}"></div>
+    <div class="f-group"><label>Kategori</label><select id="tmplCat">${catOpts}</select></div>
+    <div class="f-group"><label>Status</label><select id="tmplStatus"><option value="active" ${t&&t.status==='active'?'selected':''}>Aktif</option><option value="inactive" ${t&&t.status==='inactive'?'selected':''}>Nonaktif</option></select></div>
+    <div class="f-group full"><label>Gradient/Thumbnail (CSS)</label><input id="tmplGrad" value="${t?t.grad:'linear-gradient(135deg,#f3f4f6,#d1d5db)'}"></div>
+    <div class="f-group full"><label>Kode HTML Template</label><textarea id="tmplHtml" rows="6">${t?t.html||'<div class="template">Konten HTML disini</div>':''}</textarea></div>
+  </div>`;
+  const foot=`<button class="btn" onclick="closeModal()">Batal</button><button class="btn btn-primary" onclick="saveTemplate('${code||''}')">Simpan</button>`;
+  openModal(code?'Edit Template':'Tambah Template Baru', body, foot);
+}
+function saveTemplate(code){
+  const nama=document.getElementById('tmplNama').value.trim(); if(!nama) return;
+  const data={nama, kategori:document.getElementById('tmplCat').value, status:document.getElementById('tmplStatus').value, grad:document.getElementById('tmplGrad').value, html:document.getElementById('tmplHtml').value};
+  if(code){
+    const t=state.templates.find(x=>x.code===code);
+    if(t){ Object.assign(t, data); toast('Template diperbarui'); }
+  } else {
+    const newCode=document.getElementById('tmplCode').value.trim().toUpperCase();
+    if(!newCode) return;
+    state.templates.push({id:++idc, code:newCode, ...data});
+    toast('Template baru ditambahkan');
+  }
+  closeModal(); renderTemplates();
+}
+
+/* =========================================================================
+   ADMIN: MUSIC
+========================================================================= */
+function renderMusic(){
+  document.getElementById('pg-music').innerHTML=`<div class="card"><div class="card-head"><h3>Library Musik</h3><button class="btn btn-primary" onclick="toast('Upload musik')">${icon('upload',15)}Upload</button></div>${state.music.map(m=>`<div class="music-row"><button class="play-btn" onclick="toggleMusicPlay(${m.id})">${icon(m.playing?'pause':'play',14)}</button><div class="music-info"><b>${m.judul}</b><span>${m.artis}</span></div>${statusBadge(m.status)}<button class="btn btn-sm btn-icon" onclick="toast('Edit')">${icon('edit',14)}</button><button class="btn btn-sm btn-icon" onclick="deleteMusic(${m.id})">${icon('trash',14)}</button></div>`).join('')}</div>`;
+}
+function toggleMusicPlay(id){ state.music.forEach(m=>m.playing=(m.id===id)?!m.playing:false); renderMusic(); }
+function deleteMusic(id){ state.music=state.music.filter(m=>m.id!==id); renderMusic(); toast('Musik dihapus'); }
+
+/* =========================================================================
+   ADMIN & CLIENT: PROFILE
+========================================================================= */
+function renderProfile(){
+  const u=state.role==='admin'?state.currentUser.admin:state.currentUser.client;
+  document.getElementById('pg-profile').innerHTML=`<div class="card" style="max-width:520px;"><div class="card-head"><h3>Data Profil</h3></div><div class="form-grid"><div class="f-group full"><label>Nama</label><input id="pNama" value="${u.nama}"></div><div class="f-group"><label>Username</label><input value="${u.username}" disabled></div><div class="f-group"><label>Email</label><input value="${u.email}" disabled></div><div class="f-group full"><label>Telepon</label><input id="pTelp" value="${u.telp}"></div></div><div style="margin-top:1.2rem;"><button class="btn btn-primary" onclick="saveProfile()">Simpan</button></div></div><div class="card" style="max-width:520px;"><div class="card-head"><h3>Ganti Password</h3></div><div class="form-grid"><div class="f-group full"><label>Password Lama</label><input type="password"></div><div class="f-group full"><label>Password Baru</label><input type="password"></div></div><div style="margin-top:1.2rem;"><button class="btn btn-primary" onclick="toast('Password diperbarui')">Perbarui</button></div></div>`;
+}
+function saveProfile(){
+  const u=state.role==='admin'?state.currentUser.admin:state.currentUser.client;
+  u.nama=document.getElementById('pNama').value; u.telp=document.getElementById('pTelp').value; applyRole(); toast('Profil diperbarui');
+}
+
+/* =========================================================================
+   CLIENT: DASHBOARD
+========================================================================= */
+let cdInterval;
+function renderClientDashboard(){
+  const inv=state.invitation;
+  const attend={hadir:0,tidak_hadir:0,ragu:0};
+  state.wishes.forEach(w=>attend[w.attend]!==undefined&&attend[w.attend]++);
+  const total=state.wishes.length;
+  const link=`https://undangan.online/v/${inv.slug}`;
+  document.getElementById('pg-dashboard').innerHTML=`
+    <div class="banner status-${inv.status}">${icon(inv.status==='publikasi'?'check':'event',26)}<div class="grow"><b>Status: ${inv.status==='draft'?'Draft':inv.status==='publikasi'?'Terbit':'Selesai'}</b><span>Slug: /${inv.slug}</span></div>${inv.status!=='publikasi'?`<button class="btn btn-sm btn-primary" onclick="publishInvitation()">Terbitkan</button>`:''}</div>
+    <div class="banner status-publikasi">${icon('key',26)}<div class="grow"><b>Masa Aktif</b><span>Aktif hingga 01 Februari 2027</span></div></div>
+    <div class="stat-grid"><div class="stat-card accent"><div class="lbl">Total Tamu</div><div class="val">${total}</div></div><div class="stat-card"><div class="lbl">Hadir</div><div class="val">${attend.hadir}</div></div><div class="stat-card"><div class="lbl">Tidak</div><div class="val">${attend.tidak_hadir}</div></div><div class="stat-card"><div class="lbl">Ragu</div><div class="val">${attend.ragu}</div></div></div>
+    <div class="card"><div class="card-head"><h3>Countdown</h3></div><div class="cd-mini"><div><div class="n" id="cdD">00</div><div class="l">Hari</div></div><div><div class="n" id="cdH">00</div><div class="l">Jam</div></div><div><div class="n" id="cdM">00</div><div class="l">Menit</div></div><div><div class="n" id="cdS">00</div><div class="l">Detik</div></div></div></div>
+    <div class="card"><div class="card-head"><h3>Link Undangan</h3></div><div class="link-box" style="margin-bottom:.9rem;"><code>${link}</code><button class="btn btn-sm" onclick="copyText('${link}')">${icon('copy',13)}Salin</button></div><div class="card-head" style="margin-bottom:.6rem;"><h3 style="font-size:1rem;">Link Personal</h3></div><div style="display:flex;gap:.6rem;flex-wrap:wrap;"><input id="guestNameInput" placeholder="Nama tamu" style="flex:1;min-width:200px;padding:.6rem .75rem;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface-2);color:var(--ink);"><button class="btn btn-primary" onclick="generateGuestLink()">${icon('link',15)}Buat</button></div><div id="guestLinkResult" style="margin-top:.8rem;"></div></div>
+  `;
+  tickClientCountdown(); clearInterval(cdInterval); cdInterval=setInterval(tickClientCountdown,1000);
+}
+function tickClientCountdown(){
+  const target=new Date('2026-12-12T08:00:00+07:00').getTime();
+  const diff=Math.max(0,target-Date.now());
+  const el=id=>document.getElementById(id); if(!el('cdD')) return;
+  el('cdD').textContent=String(Math.floor(diff/86400000)).padStart(2,'0');
+  el('cdH').textContent=String(Math.floor(diff%86400000/3600000)).padStart(2,'0');
+  el('cdM').textContent=String(Math.floor(diff%3600000/60000)).padStart(2,'0');
+  el('cdS').textContent=String(Math.floor(diff%60000/1000)).padStart(2,'0');
+}
+function copyText(t){ navigator.clipboard&&navigator.clipboard.writeText(t); toast('Link disalin'); }
+function generateGuestLink(){
+  const name=document.getElementById('guestNameInput').value.trim(); if(!name) return;
+  const link=`https://undangan.online/v/${state.invitation.slug}?to=${encodeURIComponent(name)}`;
+  document.getElementById('guestLinkResult').innerHTML=`<div class="link-box"><code>${link}</code><button class="btn btn-sm" onclick="copyText('${link}')">${icon('copy',13)}Salin</button></div>`;
+}
+function publishInvitation(){ state.invitation.status='publikasi'; renderClientDashboard(); toast('Undangan diterbitkan!'); }
+
+/* =========================================================================
+   CLIENT: EVENT
+========================================================================= */
+function renderEvent(){
+  const inv=state.invitation;
+  const eventTypes = state.params.filter(p=>p.group==='EVENT_TYPE' && p.status==='active');
+  const isCouple = inv.jenisAcara==='PERNIKAHAN' || inv.jenisAcara==='LAMARAN';
+  const showLoveStory = inv.jenisAcara==='PERNIKAHAN' || inv.jenisAcara==='LAMARAN';
+
+  const eventPills = eventTypes.map(p=>`<button class="pill-btn ${inv.jenisAcara===p.code?'active':''}" onclick="setEventType('${p.code}')">${p.nama}</button>`).join('');
+
+  let coupleHtml = '';
+  if(isCouple){
+    coupleHtml = `
+      <hr class="section-divider">
+      <div class="card-head"><h3>Data Mempelai</h3></div>
+      <div class="form-grid">
+        <div class="f-group"><label>Nama Pria</label><input id="evGroomNama" value="${inv.groom.nama}"></div>
+        <div class="f-group"><label>Panggilan</label><input id="evGroomNick" value="${inv.groom.nickname}"></div>
+        <div class="f-group full"><label>Orang Tua Pria</label><input id="evGroomOrtu" value="${inv.groom.ortu}"></div>
+        <div class="f-group full"><label>Foto Pria</label><div style="max-width:140px;"><img class="photo-preview" id="groomPreview" src="${inv.groom.foto||''}" style="${inv.groom.foto?'':'display:none;'}"><div class="upload-box" id="groomUploadBox" style="${inv.groom.foto?'display:none;':''} padding:.9rem;">${icon('upload',18)}<p>Unggah</p><input type="file" accept="image/*" onchange="handleImgUpload(event,'groom')"></div></div></div>
+        <div class="f-group" style="grid-column:1/-1; border-top:1px solid var(--border); margin-top:.4rem; padding-top:1rem;"></div>
+        <div class="f-group"><label>Nama Wanita</label><input id="evBrideNama" value="${inv.bride.nama}"></div>
+        <div class="f-group"><label>Panggilan</label><input id="evBrideNick" value="${inv.bride.nickname}"></div>
+        <div class="f-group full"><label>Orang Tua Wanita</label><input id="evBrideOrtu" value="${inv.bride.ortu}"></div>
+        <div class="f-group full"><label>Foto Wanita</label><div style="max-width:140px;"><img class="photo-preview" id="bridePreview" src="${inv.bride.foto||''}" style="${inv.bride.foto?'':'display:none;'}"><div class="upload-box" id="brideUploadBox" style="${inv.bride.foto?'display:none;':''} padding:.9rem;">${icon('upload',18)}<p>Unggah</p><input type="file" accept="image/*" onchange="handleImgUpload(event,'bride')"></div></div></div>
+      </div>
+    `;
+  } else {
+    coupleHtml = `
+      <hr class="section-divider">
+      <div class="card-head"><h3>Data Anak / Penerima Acara</h3></div>
+      <div class="form-grid">
+        <div class="f-group full"><label>Nama Lengkap</label><input id="evPersonNama" value="${inv.person.nama}"></div>
+        <div class="f-group"><label>Nama Panggilan</label><input id="evPersonNick" value="${inv.person.nickname}"></div>
+        <div class="f-group"><label>Anak ke-</label><input id="evPersonAnak" value="${inv.person.anakKe||''}"></div>
+        <div class="f-group full"><label>Orang Tua</label><input id="evPersonOrtu" value="${inv.person.ortu}"></div>
+        <div class="f-group full"><label>Foto</label><div style="max-width:140px;"><img class="photo-preview" id="personPreview" src="${inv.person.foto||''}" style="${inv.person.foto?'':'display:none;'}"><div class="upload-box" id="personUploadBox" style="${inv.person.foto?'display:none;':''} padding:.9rem;">${icon('upload',18)}<p>Unggah</p><input type="file" accept="image/*" onchange="handleImgUpload(event,'person')"></div></div></div>
+      </div>
+    `;
+  }
+
+  let loveStoryHtml = '';
+  if(showLoveStory){
+    loveStoryHtml = `
+      <hr class="section-divider">
+      <div class="card-head"><h3>Love Story</h3><button class="btn btn-sm btn-primary" onclick="storyForm()">${icon('plus',13)}Tambah</button></div>
+      <div id="storyList">${renderStoryList()}</div>
+    `;
+  } else {
+    loveStoryHtml = `<hr class="section-divider"><div class="f-hint">Love Story hanya tersedia untuk jenis acara Pernikahan atau Lamaran.</div>`;
+  }
+
+  let sessionsHtml = inv.sessions.map((s,idx)=>`
+    <div class="session-item" data-session-id="${s.id}">
+      <div class="session-fields">
+        <div class="f-group"><label>Nama Sesi</label><input class="sess-name" value="${s.name}"></div>
+        <div class="f-group"><label>Tanggal</label><input type="date" class="sess-date" value="${s.tanggal}"></div>
+        <div class="f-group"><label>Jam</label><input class="sess-time" value="${s.jam}"></div>
+        <div class="f-group"><label>Link Maps</label><input class="sess-maps" value="${s.maps}"></div>
+        <div class="f-group full"><label>Lokasi</label><input class="sess-location" value="${s.lokasi}"></div>
+      </div>
+      <div class="session-actions">
+        ${inv.sessions.length>1?`<button class="btn btn-sm btn-danger" onclick="removeSession(${s.id})">${icon('trash',13)}</button>`:''}
+      </div>
+    </div>
+  `).join('');
+
+  document.getElementById('pg-event').innerHTML=`
+    <div class="card">
+      <div class="card-head"><h3>Jenis Acara</h3></div>
+      <div class="pill-group">${eventPills}</div>
+    </div>
+    <div class="card">
+      <div class="card-head"><h3>Pesan Sambutan</h3></div>
+      <div class="form-grid"><div class="f-group full"><textarea id="evPesan" rows="3">${inv.pesanSambutan}</textarea></div></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><h3>Gambar Cover</h3></div>
+      <div style="max-width:220px;">
+        <img class="photo-preview" id="coverPreview" src="${inv.cover||''}" style="${inv.cover?'':'display:none;'}">
+        <div class="upload-box" id="coverUploadBox" style="${inv.cover?'display:none;':''}">${icon('upload',22)}<p>Unggah cover</p><input type="file" accept="image/*" onchange="handleImgUpload(event,'cover')"></div>
+      </div>
+    </div>
+    <div class="card" id="eventPersonContainer">${coupleHtml}</div>
+    <div class="card">
+      <div class="card-head"><h3>Sesi Acara</h3><button class="btn btn-sm btn-primary" onclick="addSession()">${icon('plus',13)}Tambah Sesi</button></div>
+      <div id="sessionsContainer">${sessionsHtml}</div>
+      <div class="f-hint" style="margin-top:.5rem;">* Minimal 1 sesi. Sesi pertama tampil sebagai acara utama.</div>
+    </div>
+    <div class="card">${loveStoryHtml}</div>
+    <div style="margin-bottom:2rem;"><button class="btn btn-primary" onclick="saveEvent()">${icon('check',15)}Simpan Semua</button></div>
+  `;
+}
+
+function setEventType(val){ state.invitation.jenisAcara=val; renderEvent(); toast('Jenis acara diubah'); }
+function renderStoryList(){
+  return state.invitation.loveStory.map((s,i)=>`
+    <div style="display:flex;gap:.8rem;align-items:flex-start;padding:.9rem 0;${i?'border-top:1px solid var(--border);':''}">
+      <div style="flex:none;width:70px;font-size:.72rem;color:var(--ink-dim);padding-top:.15rem;">${s.tanggal}</div>
+      <div style="flex:1;"><b style="font-size:.88rem;">${s.title}</b><p style="font-size:.8rem;color:var(--ink-dim);margin-top:.2rem;">${s.desc}</p></div>
+      <div class="row-actions"><button class="btn btn-sm btn-icon" onclick="storyForm(${s.id})">${icon('edit',13)}</button><button class="btn btn-sm btn-icon" onclick="deleteStory(${s.id})">${icon('trash',13)}</button></div>
+    </div>`).join('')||`<p class="hint" style="padding:.5rem 0;">Belum ada cerita.</p>`;
+}
+function storyForm(id){
+  const s=id?state.invitation.loveStory.find(x=>x.id===id):null;
+  const body=`<div class="form-grid"><div class="f-group full"><label>Judul</label><input id="stTitle" value="${s?s.title:''}"></div><div class="f-group"><label>Tanggal</label><input type="date" id="stTgl" value="${s?s.tanggal:''}"></div><div class="f-group full"><label>Cerita</label><textarea id="stDesc">${s?s.desc:''}</textarea></div></div>`;
+  const foot=`<button class="btn" onclick="closeModal()">Batal</button><button class="btn btn-primary" onclick="saveStory(${id||'null'})">Simpan</button>`;
+  openModal(id?'Edit Cerita':'Tambah Cerita', body, foot);
+}
+function saveStory(id){
+  const title=document.getElementById('stTitle').value.trim(); if(!title) return;
+  const data={title, tanggal:document.getElementById('stTgl').value, desc:document.getElementById('stDesc').value};
+  if(id){ Object.assign(state.invitation.loveStory.find(x=>x.id===id), data); }
+  else{ idc++; state.invitation.loveStory.push({id:idc, ...data}); }
+  closeModal(); document.getElementById('storyList').innerHTML=renderStoryList(); toast('Love story disimpan');
+}
+function deleteStory(id){ state.invitation.loveStory=state.invitation.loveStory.filter(s=>s.id!==id); document.getElementById('storyList').innerHTML=renderStoryList(); toast('Cerita dihapus'); }
+function addSession(){
+  const inv=state.invitation;
+  const last=inv.sessions[inv.sessions.length-1];
+  const newId=++sessionIdCounter;
+  inv.sessions.push({id:newId, name:last?`Sesi ${inv.sessions.length+1}`:'Acara', tanggal:last?last.tanggal:'', jam:last?last.jam:'', lokasi:last?last.lokasi:'', maps:last?last.maps:''});
+  renderEvent(); toast('Sesi baru ditambahkan');
+}
+function removeSession(id){
+  const inv=state.invitation;
+  if(inv.sessions.length<=1){ toast('Minimal 1 sesi'); return; }
+  inv.sessions=inv.sessions.filter(s=>s.id!==id);
+  renderEvent(); toast('Sesi dihapus');
+}
+function handleImgUpload(ev, target){
+  const file=ev.target.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const url=e.target.result;
+    const inv=state.invitation;
+    if(target==='cover'){ inv.cover=url; document.getElementById('coverPreview').src=url; document.getElementById('coverPreview').style.display='block'; document.getElementById('coverUploadBox').style.display='none'; }
+    else if(target==='groom'){ inv.groom.foto=url; document.getElementById('groomPreview').src=url; document.getElementById('groomPreview').style.display='block'; document.getElementById('groomUploadBox').style.display='none'; }
+    else if(target==='bride'){ inv.bride.foto=url; document.getElementById('bridePreview').src=url; document.getElementById('bridePreview').style.display='block'; document.getElementById('brideUploadBox').style.display='none'; }
+    else if(target==='person'){ inv.person.foto=url; document.getElementById('personPreview').src=url; document.getElementById('personPreview').style.display='block'; document.getElementById('personUploadBox').style.display='none'; }
+  };
+  reader.readAsDataURL(file);
+}
+function saveEvent(){
+  const inv=state.invitation;
+  inv.pesanSambutan=document.getElementById('evPesan').value;
+  const isCouple=inv.jenisAcara==='PERNIKAHAN'||inv.jenisAcara==='LAMARAN';
+  if(isCouple){
+    inv.groom.nama=document.getElementById('evGroomNama').value;
+    inv.groom.nickname=document.getElementById('evGroomNick').value;
+    inv.groom.ortu=document.getElementById('evGroomOrtu').value;
+    inv.bride.nama=document.getElementById('evBrideNama').value;
+    inv.bride.nickname=document.getElementById('evBrideNick').value;
+    inv.bride.ortu=document.getElementById('evBrideOrtu').value;
+  } else {
+    inv.person.nama=document.getElementById('evPersonNama').value;
+    inv.person.nickname=document.getElementById('evPersonNick').value;
+    inv.person.anakKe=document.getElementById('evPersonAnak').value;
+    inv.person.ortu=document.getElementById('evPersonOrtu').value;
+  }
+  document.querySelectorAll('.session-item').forEach(el=>{
+    const sid=parseInt(el.dataset.sessionId);
+    const s=inv.sessions.find(x=>x.id===sid);
+    if(s){ s.name=el.querySelector('.sess-name').value; s.tanggal=el.querySelector('.sess-date').value; s.jam=el.querySelector('.sess-time').value; s.maps=el.querySelector('.sess-maps').value; s.lokasi=el.querySelector('.sess-location').value; }
+  });
+  toast('Perubahan berhasil disimpan');
+}
+
+/* =========================================================================
+   CLIENT: GALLERY
+========================================================================= */
+function renderGallery(){
+  document.getElementById('pg-gallery').innerHTML=`
+    <div class="card"><div class="card-head"><h3>Unggah Foto</h3></div><div class="upload-box">${icon('upload',24)}<p>Klik atau seret</p><input type="file" accept="image/*" multiple onchange="handleGalleryUpload(event)"></div></div>
+    <div class="card"><div class="card-head"><h3>Galeri (${state.gallery.length})</h3></div><div class="gal-grid" id="galGrid">${renderGalGrid()}</div></div>`;
+}
+function renderGalGrid(){
+  if(!state.gallery.length) return `<div class="empty-state" style="grid-column:1/-1;">${icon('gallery',34)}<p>Belum ada foto.</p></div>`;
+  return state.gallery.map(g=>`<div class="gal-card"><img src="${g.img||'data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22><rect width=%22200%22 height=%22200%22 fill=%22%23f3f4f6%22/></svg>'}"><div class="gc-body"><input value="${g.caption}" onchange="updateCaption(${g.id}, this.value)" placeholder="Caption..."></div><div class="gc-actions"><button class="btn btn-sm btn-icon" onclick="deletePhoto(${g.id})">${icon('trash',13)}</button></div></div>`).join('');
+}
+function handleGalleryUpload(ev){
+  const files=Array.from(ev.target.files); let loaded=0;
+  files.forEach(file=>{ const reader=new FileReader(); reader.onload=e=>{ idc++; state.gallery.push({id:idc, caption:file.name.replace(/\.[^/.]+$/,''), img:e.target.result}); loaded++; if(loaded===files.length){ document.getElementById('galGrid').innerHTML=renderGalGrid(); toast(`${files.length} foto diunggah`); } }; reader.readAsDataURL(file); });
+}
+function updateCaption(id,val){ state.gallery.find(g=>g.id===id).caption=val; }
+function deletePhoto(id){ state.gallery=state.gallery.filter(g=>g.id!==id); document.getElementById('galGrid').innerHTML=renderGalGrid(); toast('Foto dihapus'); }
+
+/* =========================================================================
+   CLIENT: CUSTOMIZE — dengan play button yang diperbaiki
+========================================================================= */
+function renderCustomize(){
+  const cats=['semua',...new Set(state.templates.map(t=>t.kategori))];
+  const catPills = cats.map((c,i)=>`<button class="pill-btn ${i===0?'active':''}" onclick="filterTemplateCat('${c}', this)">${c}</button>`).join('');
+  document.getElementById('pg-customize').innerHTML=`
+    <div class="card"><div class="card-head"><h3>Pilih Tema</h3></div><div class="pill-group">${catPills}</div><div class="tmpl-grid" id="custTmplGrid">${renderCustTemplates('semua')}</div></div>
+    <div class="card"><div class="card-head"><h3>Musik Latar</h3></div><div class="tabs" style="margin-bottom:1rem;"><button class="tab-btn active" onclick="toast('Library')">Pilih dari Library</button><button class="tab-btn" onclick="document.getElementById('customMusicInput').click()">Upload Sendiri</button></div><input type="file" accept="audio/*" id="customMusicInput" style="display:none;" onchange="handleMusicUpload(event)"><div id="customMusicPreview"></div>${state.music.map(m=>`<div class="music-row ${state.invitation.selectedMusic===m.id?'selected':''}"><button class="play-btn" onclick="toggleMusicPlayClient(${m.id})">${icon(m.playing?'pause':'play',16)}</button><div class="music-info"><b>${m.judul}</b><span>${m.artis}</span></div><button class="btn btn-sm ${state.invitation.selectedMusic===m.id?'btn-primary':''}" onclick="selectMusic(${m.id})">${state.invitation.selectedMusic===m.id?'Terpilih':'Pilih'}</button></div>`).join('')}</div>
+    <div class="card" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.8rem;"><div><b>Siap dipublikasikan?</b><span class="hint">Status: ${state.invitation.status}</span></div><button class="btn btn-primary" onclick="publishInvitation()">${icon('check',15)}Terbitkan</button></div>
+  `;
+}
+function toggleMusicPlayClient(id){
+  state.music.forEach(m=>m.playing=(m.id===id)?!m.playing:false);
+  renderCustomize();
+}
+function renderCustTemplates(cat){
+  const list=cat==='semua'?state.templates:state.templates.filter(t=>t.kategori===cat);
+  return list.map(t=>`<div class="tmpl-card ${state.invitation.selectedTemplate===t.code?'selected':''}"><div class="tmpl-thumb" data-cat="${t.kategori}" style="background:${t.grad};"></div><div class="tmpl-body"><b>${t.nama}</b><span class="code">${t.code}</span></div><div class="tmpl-foot"><button class="btn btn-sm" style="flex:1" onclick="toast('Preview ${t.code}')">${icon('eye',13)}Preview</button><button class="btn btn-sm ${state.invitation.selectedTemplate===t.code?'btn-primary':''}" onclick="selectTemplate('${t.code}')">${state.invitation.selectedTemplate===t.code?'Terpilih':'Pilih'}</button></div></div>`).join('');
+}
+function filterTemplateCat(cat,btn){ document.querySelectorAll('#pg-customize .pill-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); document.getElementById('custTmplGrid').innerHTML=renderCustTemplates(cat); }
+function selectTemplate(code){ state.invitation.selectedTemplate=code; renderCustomize(); toast('Tema dipilih: '+code); }
+function selectMusic(id){ state.invitation.selectedMusic=id; renderCustomize(); toast('Musik dipilih'); }
+function handleMusicUpload(ev){
+  const file=ev.target.files[0]; if(!file) return;
+  const url=URL.createObjectURL(file);
+  document.getElementById('customMusicPreview').innerHTML=`<div class="music-row selected"><div class="music-info"><b>${file.name}</b><span>Musik custom</span></div></div><audio controls src="${url}" style="width:100%;margin-bottom:1rem;"></audio>`;
+  toast('Musik custom diunggah');
+}
+
+/* =========================================================================
+   CLIENT: GUESTBOOK
+========================================================================= */
+function renderGuestbook(){
+  const attend={hadir:0,tidak_hadir:0,ragu:0};
+  state.wishes.forEach(w=>attend[w.attend]!==undefined&&attend[w.attend]++);
+  document.getElementById('pg-guestbook').innerHTML=`
+    <div class="wish-summary"><div class="sc"><div class="n">${state.wishes.length}</div><div class="l">Total</div></div><div class="sc"><div class="n">${attend.hadir}</div><div class="l">Hadir</div></div><div class="sc"><div class="n">${attend.tidak_hadir}</div><div class="l">Tidak</div></div><div class="sc"><div class="n">${attend.ragu}</div><div class="l">Ragu</div></div></div>
+    <div class="card"><div class="toolbar"><div class="search-input">${icon('search',15)}<input placeholder="Cari..." oninput="filterTable('wishTbl', this.value)"></div></div><div id="wishListWrap">${renderWishList()}</div></div>`;
+}
+function renderWishList(){
+  if(!state.wishes.length) return `<div class="empty-state">${icon('guestbook',34)}<p>Belum ada ucapan.</p></div>`;
+  return state.wishes.map(w=>`<div class="music-row" data-search="${w.nama.toLowerCase()}" style="align-items:flex-start;flex-wrap:wrap;"><div class="music-info" style="min-width:220px;"><div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;"><b>${w.nama}</b> ${statusBadge(w.attend)} <span class="hint">· ${w.party} org</span></div><p style="font-size:.83rem;color:var(--ink-dim);margin-top:.4rem;max-width:480px;">${w.msg}</p>${w.reply?`<div style="margin-top:.5rem;font-size:.78rem;padding:.5rem .7rem;background:var(--surface-2);border-left:2px solid var(--accent);"><b style="color:var(--accent);">Balasan:</b> ${w.reply}</div>`:''}</div><div style="display:flex;flex-direction:column;gap:.4rem;margin-left:auto;"><button class="btn btn-sm ${w.published?'btn-primary':''}" onclick="togglePublish(${w.id})">${w.published?'Terpublikasi':'Publikasikan'}</button><button class="btn btn-sm" onclick="replyForm(${w.id})">Balas</button><button class="btn btn-sm btn-danger" onclick="deleteWish(${w.id})">Hapus</button></div></div>`).join('');
+}
+function togglePublish(id){ const w=state.wishes.find(x=>x.id===id); w.published=!w.published; document.getElementById('wishListWrap').innerHTML=renderWishList(); toast(w.published?'Dipublikasikan':'Disembunyikan'); }
+function deleteWish(id){ state.wishes=state.wishes.filter(w=>w.id!==id); renderGuestbook(); toast('Ucapan dihapus'); }
+function replyForm(id){
+  const w=state.wishes.find(x=>x.id===id);
+  const body=`<div class="f-group"><label>Balasan untuk ${w.nama}</label><textarea id="replyText">${w.reply}</textarea></div>`;
+  const foot=`<button class="btn" onclick="closeModal()">Batal</button><button class="btn btn-primary" onclick="saveReply(${id})">Kirim</button>`;
+  openModal('Balas Ucapan', body, foot);
+}
+function saveReply(id){ state.wishes.find(x=>x.id===id).reply=document.getElementById('replyText').value; closeModal(); document.getElementById('wishListWrap').innerHTML=renderWishList(); toast('Balasan terkirim'); }
+
+/* =========================================================================
+   CLIENT: DAFTAR TAMU
+========================================================================= */
+function renderClientGuests(){
+  const code=getClientCode();
+  const myGuests=getClientGuests();
+  document.getElementById('pg-clientguests').innerHTML=`
+    <div class="card">
+      <div class="toolbar">
+        <div class="search-input">${icon('search',15)}<input placeholder="Cari nama..." oninput="filterClientGuestTable(this.value)"></div>
+        <select class="filter-sel" onchange="filterClientGuestStatus(this.value)">
+          <option value="semua">Semua Status</option><option value="hadir">Hadir</option><option value="tidak_hadir">Tidak Hadir</option><option value="ragu">Ragu-ragu</option><option value="menunggu">Menunggu</option><option value="undangan_terkirim">Terkirim</option>
+        </select>
+        <button class="btn btn-primary" onclick="clientGuestForm()">${icon('plus',15)}Tambah Tamu</button>
+      </div>
+      <div class="table-wrap"><table id="clientGuestsTbl"><thead><tr><th>Nama</th><th>No. Telepon</th><th>Status Kehadiran</th><th>Aksi</th></tr></thead>
+      <tbody>${myGuests.length?myGuests.map(g=>clientGuestRow(g)).join(''):`<tr><td colspan="4" class="empty-state" style="padding:2rem;">Belum ada tamu.</td></tr>`}</tbody></table></div>
+    </div>`;
+}
+function clientGuestRow(g){
+  const linkPersonal=`https://undangan.online/v/${state.invitation.slug}?to=${encodeURIComponent(g.nama)}`;
+  const waLink=`https://wa.me/?text=Halo%20${encodeURIComponent(g.nama)}%2C%20berikut%20link%20undangan%20Anda%3A%20${encodeURIComponent(linkPersonal)}`;
+  return `<tr data-search="${g.nama.toLowerCase()}" data-status="${g.status}">
+    <td class="cell-main">${g.nama}</td>
+    <td>${g.telp||'-'}</td>
+    <td>${statusBadge(g.status)}</td>
+    <td><div class="row-actions">
+      <button class="btn btn-sm btn-icon" title="Salin Link Personal" onclick="copyText('${linkPersonal}')">${icon('copy',14)}</button>
+      <button class="btn btn-sm btn-icon" title="Kirim via WhatsApp" onclick="window.open('${waLink}','_blank')">${icon('whatsapp',14)}</button>
+      <button class="btn btn-sm btn-icon" title="Edit" onclick="clientGuestForm(${g.id})">${icon('edit',14)}</button>
+      <button class="btn btn-sm btn-icon" title="Hapus" onclick="deleteClientGuest(${g.id})">${icon('trash',14)}</button>
+    </div></td>
+  </tr>`;
+}
+function filterClientGuestTable(q){ q=q.toLowerCase(); document.querySelectorAll('#clientGuestsTbl tbody tr').forEach(tr=>{ tr.style.display=(tr.dataset.search||'').includes(q)?'':'none'; }); }
+function filterClientGuestStatus(v){ document.querySelectorAll('#clientGuestsTbl tbody tr').forEach(tr=>{ tr.style.display=(v==='semua'||tr.dataset.status===v)?'':'none'; }); }
+function deleteClientGuest(id){
+  const code=getClientCode();
+  state.guests=state.guests.filter(g=>!(g.id===id && g.clientCode===code));
+  renderClientGuests(); toast('Tamu dihapus');
+}
+function clientGuestForm(id){
+  const code=getClientCode();
+  const g=id?state.guests.find(x=>x.id===id && x.clientCode===code):null;
+  const catOpts=state.params.filter(p=>p.group==='GUEST_CATEGORY').map(p=>`<option value="${p.code}" ${g&&g.kategori===p.code?'selected':''}>${p.nama}</option>`).join('');
+  const statusOpts=['menunggu','undangan_terkirim','hadir','tidak_hadir','ragu'].map(s=>`<option value="${s}" ${g&&g.status===s?'selected':''}>${s.replace('_',' ')}</option>`).join('');
+  const body=`<div class="form-grid">
+    <div class="f-group full"><label>Nama Tamu</label><input id="cgNama" value="${g?g.nama:''}"></div>
+    <div class="f-group"><label>Kategori</label><select id="cgKategori">${catOpts}</select></div>
+    <div class="f-group"><label>Status</label><select id="cgStatus">${statusOpts}</select></div>
+    <div class="f-group"><label>Email</label><input id="cgEmail" value="${g?g.email:''}"></div>
+    <div class="f-group"><label>No. Telepon</label><input id="cgTelp" value="${g?g.telp:''}"></div>
+    <div class="f-group full"><label>Catatan</label><textarea id="cgCatatan">${g?g.note||'':''}</textarea></div>
+  </div>`;
+  const foot=`<button class="btn" onclick="closeModal()">Batal</button><button class="btn btn-primary" onclick="saveClientGuest(${id||'null'})">Simpan</button>`;
+  openModal(id?'Edit Tamu':'Tambah Tamu', body, foot);
+}
+function saveClientGuest(id){
+  const nama=document.getElementById('cgNama').value.trim(); if(!nama){ toast('Nama wajib diisi'); return; }
+  const code=getClientCode();
+  const data={nama, kategori:document.getElementById('cgKategori').value, status:document.getElementById('cgStatus').value, email:document.getElementById('cgEmail').value, telp:document.getElementById('cgTelp').value, note:document.getElementById('cgCatatan').value, clientCode:code};
+  if(id){ const existing=state.guests.find(x=>x.id===id && x.clientCode===code); if(existing){ Object.assign(existing, data); toast('Data tamu diperbarui'); } }
+  else{ idc++; state.guests.push({id:idc, ...data}); toast('Tamu baru ditambahkan'); }
+  closeModal(); renderClientGuests();
+}
+
+/* init */
+applyRole();
+</script>
+</body>
+</html>

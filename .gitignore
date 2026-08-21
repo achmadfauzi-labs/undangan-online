@@ -1,0 +1,55 @@
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.next/
+out/
+dist/
+build/
+.nuxt/
+.cache/
+.env.local
+.env.*.local
+.env
+
+# Java / Maven
+target/
+.m2/
+*.class
+*.jar
+*.war
+*.ear
+*.log
+*.iml
+
+# Docker
+*.pid
+*.seed
+*.pid.lock
+
+# Misc
+*.log
+*.tmp
+*.temp
+.git/
+!.gitignore
+
+# Claude
+.claude/

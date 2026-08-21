@@ -1,0 +1,57 @@
+services:
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: undangan
+      POSTGRES_USER: undangan
+      POSTGRES_PASSWORD: undangan
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - ./Database/data_postgres:/var/lib/postgresql
+    ports:
+      - "5432:5432"
+    networks:
+      - undangan-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U undangan -d undangan"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./Backend
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/undangan
+      SPRING_DATASOURCE_USERNAME: undangan
+      SPRING_DATASOURCE_PASSWORD: undangan
+      STORAGE_BASE_PATH: /app/storage
+    volumes:
+      - ./TemaUndangan:/app/storage/themes
+      - ./Musics:/app/storage/musics
+      - ./Images:/app/storage/images
+    ports:
+      - "8083:8080"
+    networks:
+      - undangan-net
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./Frontend
+      args:
+        VITE_API_BASE_URL: http://localhost:8083
+    environment:
+      VITE_API_BASE_URL: http://localhost:8083
+    ports:
+      - "5173:80"
+    networks:
+      - undangan-net
+    depends_on:
+      - backend
+
+networks:
+  undangan-net:
+    driver: bridge
