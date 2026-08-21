@@ -1,37 +1,17 @@
-package com.undangan.online.entity;
+package com.undangan.online.dto;
 
-import jakarta.persistence.*;
 import java.time.OffsetDateTime;
 
-@Entity
-@Table(name = "gallery")
-public class Gallery {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+public class GalleryDto {
     private Long id;
-
-    @Column(name = "invitation_id", nullable = false)
     private Long invitationId;
-
-    @Column(name = "image_path", nullable = false, length = 255)
     private String imagePath;
-
-    @Column(name = "caption", length = 255)
     private String caption;
-
-    @Column(name = "sort_order", nullable = false)
     private Short sortOrder;
-
-    @Column(name = "created_at", nullable = false)
     private OffsetDateTime createdAt;
-
-    @Column(name = "updated_at", nullable = false)
     private OffsetDateTime updatedAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "invitation_id", insertable = false, updatable = false)
-    private Invitation invitation;
+    public GalleryDto() {}
 
     public Long getId() {
         return id;
@@ -87,13 +67,5 @@ public class Gallery {
 
     public void setUpdatedAt(OffsetDateTime updatedAt) {
         this.updatedAt = updatedAt;
-    }
-
-    public Invitation getInvitation() {
-        return invitation;
-    }
-
-    public void setInvitation(Invitation invitation) {
-        this.invitation = invitation;
     }
 }

@@ -1,41 +1,19 @@
-package com.undangan.online.entity;
+package com.undangan.online.dto;
 
-import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 
-@Entity
-@Table(name = "love_story")
-public class LoveStory {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+public class LoveStoryDto {
     private Long id;
-
-    @Column(name = "invitation_id", nullable = false)
     private Long invitationId;
-
-    @Column(name = "title", nullable = false, length = 150)
     private String title;
-
-    @Column(name = "story_date")
     private LocalDate storyDate;
-
-    @Column(name = "description", nullable = false)
     private String description;
-
-    @Column(name = "sort_order", nullable = false)
     private Short sortOrder;
-
-    @Column(name = "created_at", nullable = false)
     private OffsetDateTime createdAt;
-
-    @Column(name = "updated_at", nullable = false)
     private OffsetDateTime updatedAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "invitation_id", insertable = false, updatable = false)
-    private Invitation invitation;
+    public LoveStoryDto() {}
 
     public Long getId() {
         return id;
@@ -99,13 +77,5 @@ public class LoveStory {
 
     public void setUpdatedAt(OffsetDateTime updatedAt) {
         this.updatedAt = updatedAt;
-    }
-
-    public Invitation getInvitation() {
-        return invitation;
-    }
-
-    public void setInvitation(Invitation invitation) {
-        this.invitation = invitation;
     }
 }
