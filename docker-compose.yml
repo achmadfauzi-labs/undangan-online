@@ -26,6 +26,13 @@ services:
       SPRING_DATASOURCE_USERNAME: undangan
       SPRING_DATASOURCE_PASSWORD: undangan
       STORAGE_BASE_PATH: /app/storage
+      JWT_SECRET: ${JWT_SECRET:-change-me-in-production-use-256-bit-key}
+      JWT_EXPIRATION_SECONDS: "86400"
+      STORAGE_THEMES_PATH: /app/storage/themes
+      STORAGE_MUSICS_PATH: /app/storage/musics
+      STORAGE_IMAGES_PATH: /app/storage/images
+      MAX_MUSIC_SIZE_MB: "10"
+      MAX_IMAGE_SIZE_MB: "5"
     volumes:
       - ./TemaUndangan:/app/storage/themes
       - ./Musics:/app/storage/musics

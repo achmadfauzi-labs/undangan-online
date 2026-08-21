@@ -51,5 +51,8 @@ target/
 .git/
 !.gitignore
 
+# Database
+Database/data_postgres/
+
 # Claude
 .claude/
