@@ -161,7 +161,7 @@ CREATE TABLE template (
     name          VARCHAR(100) NOT NULL,
     category      VARCHAR(30)  NOT NULL
                   CHECK (category IN ('luxury','minimalist','botanical','lainnya')),
-    folder_path   VARCHAR(255) NOT NULL,                  -- path relatif di TemaUndangan/
+    folder_path   VARCHAR(255) ,                  -- path relatif di TemaUndangan/
     thumbnail_css TEXT,                                   -- gradient CSS untuk preview
     status        VARCHAR(20)  NOT NULL DEFAULT 'active'
                   CHECK (status IN ('active','inactive')),
