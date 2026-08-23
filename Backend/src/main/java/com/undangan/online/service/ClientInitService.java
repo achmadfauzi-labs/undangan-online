@@ -2,14 +2,19 @@ package com.undangan.online.service;
 
 import com.undangan.online.entity.Role;
 import com.undangan.online.repository.RoleRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @Service
 public class ClientInitService {
+
+    private static final Logger log = LoggerFactory.getLogger(ClientInitService.class);
 
     private final RoleRepository roleRepository;
 
@@ -28,12 +33,13 @@ public class ClientInitService {
                     role.setName(code);
                     role.setDescription("Role default: " + code);
                     role.setIsSystem(true);
-                    role.setCreatedAt(java.time.OffsetDateTime.now());
+                    role.setCreatedAt(OffsetDateTime.now());
                     roleRepository.save(role);
+                    log.info("Default role '{}' created during startup", code);
                 }
             }
         } catch (Exception ex) {
-            System.err.println("Gagal init master data: " + ex.getMessage());
+            log.error("Gagal init master data: {}", ex.getMessage(), ex);
         }
     }
 }

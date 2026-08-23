@@ -53,6 +53,15 @@ target/
 
 # Database
 Database/data_postgres/
+Database/data_postgres/**
+
+# Test files
+C:/Users/Public/login-*.json
+Musics/custom/
+Musics/*.mp3
 
 # Claude
 .claude/
+
+#Kilo
+.kilo/

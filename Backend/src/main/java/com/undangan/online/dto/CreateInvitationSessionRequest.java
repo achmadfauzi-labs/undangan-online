@@ -2,23 +2,27 @@ package com.undangan.online.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 
 public class CreateInvitationSessionRequest {
     @NotBlank(message = "Nama sesi wajib diisi")
-    @jakarta.validation.constraints.Size(max = 100, message = "Nama maksimal 100 karakter")
+    @Size(max = 100, message = "Nama maksimal 100 karakter")
     private String name;
 
     @NotNull(message = "Tanggal sesi wajib diisi")
     private LocalDate sessionDate;
 
-    @jakarta.validation.constraints.Size(max = 50, message = "Session time maksimal 50 karakter")
+    @NotBlank(message = "Session time wajib diisi")
+    @Size(max = 50, message = "Session time maksimal 50 karakter")
     private String sessionTime;
 
+    @NotBlank(message = "Lokasi wajib diisi")
+    @Size(max = 255, message = "Lokasi maksimal 255 karakter")
     private String location;
 
-    @jakarta.validation.constraints.Size(max = 500, message = "Maps URL maksimal 500 karakter")
+    @Size(max = 500, message = "Maps URL maksimal 500 karakter")
     private String mapsUrl;
 
     @NotNull(message = "Sort order wajib diisi")

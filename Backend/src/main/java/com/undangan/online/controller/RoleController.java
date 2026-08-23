@@ -1,5 +1,6 @@
 package com.undangan.online.controller;
 
+import com.undangan.online.dto.ApiResponse;
 import com.undangan.online.dto.CreateRoleRequest;
 import com.undangan.online.dto.RoleDto;
 import com.undangan.online.dto.UpdateRolePermissionsRequest;
@@ -11,7 +12,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/admin/roles")
@@ -25,46 +25,46 @@ public class RoleController {
     }
 
     @GetMapping
-    public ResponseEntity<List<RoleDto>> list() {
-        return ResponseEntity.ok(roleService.listAll());
+    public ResponseEntity<ApiResponse<List<RoleDto>>> list() {
+        return ResponseEntity.ok(ApiResponse.ok(roleService.listAll()));
     }
 
     @GetMapping("/{code}")
-    public ResponseEntity<RoleDto> getByCode(@PathVariable String code) {
-        return ResponseEntity.ok(roleService.getByCode(code));
+    public ResponseEntity<ApiResponse<RoleDto>> getByCode(@PathVariable String code) {
+        return ResponseEntity.ok(ApiResponse.ok(roleService.getByCode(code)));
     }
 
     @PostMapping
-    public ResponseEntity<RoleDto> create(@Valid @RequestBody CreateRoleRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(roleService.create(request));
+    public ResponseEntity<ApiResponse<RoleDto>> create(@Valid @RequestBody CreateRoleRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.created(roleService.create(request)));
     }
 
     @PutMapping("/{code}")
-    public ResponseEntity<RoleDto> update(@PathVariable String code,
-                                          @RequestBody CreateRoleRequest request) {
-        return ResponseEntity.ok(roleService.update(code, request));
+    public ResponseEntity<ApiResponse<RoleDto>> update(@PathVariable String code,
+                                                      @Valid @RequestBody CreateRoleRequest request) {
+        return ResponseEntity.ok(ApiResponse.ok("Data berhasil diupdate", roleService.update(code, request)));
     }
 
     @PutMapping("/{code}/permissions")
-    public ResponseEntity<RoleDto> updatePermissions(@PathVariable String code,
-                                                     @Valid @RequestBody UpdateRolePermissionsRequest request) {
-        return ResponseEntity.ok(roleService.updatePermissions(code, request));
+    public ResponseEntity<ApiResponse<RoleDto>> updatePermissions(@PathVariable String code,
+                                                                    @Valid @RequestBody UpdateRolePermissionsRequest request) {
+        return ResponseEntity.ok(ApiResponse.ok("Permission berhasil diupdate", roleService.updatePermissions(code, request)));
     }
 
     @DeleteMapping("/{code}")
-    public ResponseEntity<Void> delete(@PathVariable String code) {
+    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable String code) {
         roleService.delete(code);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(ApiResponse.ok("Data berhasil dihapus", null));
     }
 
     @GetMapping("/permissions")
-    public ResponseEntity<List<String>> listPermissionOptions() {
-        return ResponseEntity.ok(roleService.listPermissionOptions());
+    public ResponseEntity<ApiResponse<List<String>>> listPermissionOptions() {
+        return ResponseEntity.ok(ApiResponse.ok(roleService.listPermissionOptions()));
     }
 
     @PostMapping("/seed")
-    public ResponseEntity<Map<String, Object>> seed() {
+    public ResponseEntity<ApiResponse<Void>> seed() {
         roleService.seedDefaultRoles();
-        return ResponseEntity.ok(Map.of("message", "Default roles seeded"));
+        return ResponseEntity.ok(ApiResponse.ok("Default roles seeded", null));
     }
 }

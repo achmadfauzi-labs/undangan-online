@@ -2,10 +2,12 @@ package com.undangan.online.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public class CreateInvitationPersonRequest {
     @NotBlank(message = "Role wajib diisi")
+    @Pattern(regexp = "^(groom|bride)$", message = "Role harus 'groom' atau 'bride'")
     private String role;
 
     @NotBlank(message = "Nama wajib diisi")

@@ -2,6 +2,7 @@ package com.undangan.online.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public class RsvpSubmitRequest {
@@ -9,6 +10,7 @@ public class RsvpSubmitRequest {
     private String token;
 
     @NotBlank(message = "Attendance status wajib diisi")
+    @Pattern(regexp = "^(hadir|tidak_hadir|ragu)$", message = "Attendance status harus 'hadir', 'tidak_hadir', atau 'ragu'")
     private String attendanceStatus;
 
     private Short partySize;
