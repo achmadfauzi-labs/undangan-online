@@ -296,6 +296,53 @@ Gabungan: daftar tamu + RSVP + guestbook.
 
 ---
 
+### 14. `audit_log`
+Catatan aktivitas sistem (CRUD, login, upload/delete file) — hasil retrofit production hardening (Issue M-1.1). Tabel immutable, tidak ada `updated_at`.
+
+| Kolom | Tipe | Constraint | Keterangan |
+|---|---|---|---|
+| `id` | BIGSERIAL | PK | |
+| `user_id` | BIGINT | FK → users(id), SET NULL | Nullable — untuk aksi anonim (mis. RSVP publik) |
+| `username` | VARCHAR(50) | | Snapshot, tetap ada meski user dihapus |
+| `role` | VARCHAR(30) | | Snapshot role saat aksi terjadi |
+| `action` | VARCHAR(30) | NOT NULL, CHECK IN ('CREATE','UPDATE','DELETE','LOGIN','LOGIN_FAILED','READ','UPLOAD_FILE','DELETE_FILE') | |
+| `module` | VARCHAR(50) | | ex: "invitation", "guest", "auth" |
+| `entity_id` | BIGINT | | Nullable |
+| `old_value` | TEXT | | JSON snapshot sebelum perubahan, field sensitif di-mask |
+| `new_value` | TEXT | | JSON snapshot sesudah perubahan, field sensitif di-mask |
+| `ip_address` | VARCHAR(45) | | |
+| `user_agent` | VARCHAR(512) | | |
+| `created_at` | TIMESTAMPTZ | NOT NULL DEFAULT NOW() | |
+
+**Index:** `user_id`, `action`, `module`, `created_at DESC`
+
+**Catatan:** Untuk MVP, hanya aksi LOGIN/LOGIN_FAILED yang otomatis tercatat (lihat Issue M-1.1). Full auto-capture untuk semua modul CRUD bersifat opsional dan belum dikerjakan.
+
+---
+
+### 15. `refresh_token`
+JWT refresh token (7 hari) — hasil retrofit production hardening (Issue M-1.2). Tabel immutable, tidak ada `updated_at`.
+
+| Kolom | Tipe | Constraint | Keterangan |
+|---|---|---|---|
+| `id` | BIGSERIAL | PK | |
+| `token` | VARCHAR(255) | NOT NULL, UNIQUE | UUID string |
+| `user_id` | BIGINT | FK → users(id), CASCADE, NOT NULL | |
+| `issued_at` | TIMESTAMPTZ | NOT NULL | |
+| `expires_at` | TIMESTAMPTZ | NOT NULL | |
+| `user_agent` | VARCHAR(255) | | |
+| `ip_address` | VARCHAR(45) | | |
+| `created_at` | TIMESTAMPTZ | NOT NULL DEFAULT NOW() | |
+
+**Index:** `user_id`, `expires_at`
+
+**Catatan:**
+- Satu user boleh punya lebih dari satu refresh token aktif sekaligus (mendukung multi-device).
+- Setiap kali dipakai lewat `/auth/refresh`, token lama dihapus dan token baru dibuat (rotation) — lihat Issue M-1.2.
+- Belum ada scheduled job untuk membersihkan token yang sudah expired (di luar scope M-1.2, dicatat untuk fase berikutnya).
+
+---
+
 ## View
 
 ### `v_invitation_rsvp_summary`
@@ -334,12 +381,13 @@ GROUP BY invitation_id;
       │username  │        │ slug (UQ)│                │
       │role_code │        │client_id │                │
       │client_id │        └────┬─────┘                │
-      └──────────┘             │ 1                    │
+      └────┬─────┘             │ 1                    │
            │                   ├──────► invitation_session
-           │                   ├──────► invitation_person
-           │                   ├──────► love_story
-           │                   ├──────► gallery
-           │                   └──────► guest
+           │ 1                 ├──────► invitation_person
+           ├──────► audit_log  ├──────► love_story
+           │        (user_id)  ├──────► gallery
+           └──────► refresh_token
+                    (user_id)  └──────► guest
            │
            ▼ (FK)
       ┌──────────┐
@@ -371,6 +419,8 @@ GROUP BY invitation_id;
 | Timestamp | `_at` suffix, TIMESTAMPTZ | `created_at`, `updated_at` |
 | Tanggal murni | `_date` suffix, DATE | `session_date`, `expires_at` |
 
+**Catatan konsistensi PK (perlu diperhatikan):** tabel 1-13 pakai `BIGINT GENERATED ALWAYS AS IDENTITY`, sedangkan `audit_log` dan `refresh_token` (tabel 14-15) pakai `BIGSERIAL`. Keduanya menghasilkan auto-increment PK dan fungsinya mirip, tapi cara kerjanya beda (identity column vs sequence+default). Tidak mengganggu fungsi, tapi kalau ingin konsisten dengan standar di komentar awal file SQL, bisa diseragamkan ke `GENERATED ALWAYS AS IDENTITY` di revisi berikutnya.
+
 ---
 
 ## Trigger
@@ -386,6 +436,8 @@ GROUP BY invitation_id;
 - `invitation_person`
 - `guest`
 
+**`audit_log` dan `refresh_token` sengaja TIDAK punya trigger ini** — keduanya tabel immutable (tidak ada kolom `updated_at`), row hanya di-insert dan di-delete, tidak pernah di-update.
+
 ---
 
 ## Catatan Teknis
@@ -400,6 +452,8 @@ GROUP BY invitation_id;
 
 5. **File storage** — semua file (gambar, musik, tema) disimpan sebagai PATH string di kolom `*_path`. File biner di folder `Images/`, `Musics/`, `TemaUndangan/` (volume mount Docker).
 
+6. **`audit_log` & `refresh_token` (baru)** — hasil retrofit production hardening (Issue M-1 series), bukan bagian dari desain awal Fase 1. Keduanya `FK ke users(id)` bukan `client(id)`, karena berlaku untuk semua role (SUPER_ADMIN, STAFF, USER), bukan hanya client.
+
 ---
 
-*Terakhir diupdate: 2026-08-21*
+*Terakhir diupdate: 2026-08-24 — ditambahkan tabel `audit_log` dan `refresh_token` (Issue M-1.1 & M-1.2).*

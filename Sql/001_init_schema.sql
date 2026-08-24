@@ -404,6 +404,45 @@ COMMENT ON TABLE guest IS
     'Tamu + RSVP + guestbook dalam satu tabel. invitation_token = UUID untuk RSVP publik (UPSERT).';
 
 -- =====================================================================
+-- 14. AUDIT LOG — catatan aktivitas sistem (CRUD, login, upload file, dll)
+-- =====================================================================
+CREATE TABLE audit_log (
+    id          BIGINT       GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id     BIGINT REFERENCES users(id) ON DELETE SET NULL,
+    username    VARCHAR(50),
+    role        VARCHAR(30),
+    action      VARCHAR(30) NOT NULL
+                CHECK (action IN ('CREATE','UPDATE','DELETE','LOGIN','LOGIN_FAILED','READ','UPLOAD_FILE','DELETE_FILE')),
+    module      VARCHAR(50),
+    entity_id   BIGINT,
+    old_value   TEXT,
+    new_value   TEXT,
+    ip_address  VARCHAR(45),
+    user_agent  VARCHAR(512),
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX idx_audit_log_user_id ON audit_log(user_id);
+CREATE INDEX idx_audit_log_action ON audit_log(action);
+CREATE INDEX idx_audit_log_module ON audit_log(module);
+CREATE INDEX idx_audit_log_created_at ON audit_log(created_at DESC);
+
+-- =====================================================================
+-- 15. REFRESH TOKEN — untuk JWT refresh token (opsional, bila pakai refresh token)
+-- =====================================================================
+CREATE TABLE refresh_token (
+    id          BIGINT       GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    token       VARCHAR(255) NOT NULL UNIQUE,
+    user_id     BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    issued_at   TIMESTAMPTZ NOT NULL,
+    expires_at  TIMESTAMPTZ NOT NULL,
+    user_agent  VARCHAR(255),
+    ip_address  VARCHAR(45),
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX idx_refresh_token_user_id ON refresh_token(user_id);
+CREATE INDEX idx_refresh_token_expires_at ON refresh_token(expires_at);
+
+-- =====================================================================
 -- VIEW opsional: ringkasan RSVP per invitation (untuk dashboard)
 -- =====================================================================
 CREATE OR REPLACE VIEW v_invitation_rsvp_summary AS
