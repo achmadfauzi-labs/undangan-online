@@ -1,5 +1,6 @@
 package com.undangan.online.controller;
 
+import com.undangan.online.dto.ApiResponse;
 import com.undangan.online.dto.CreateSystemParameterRequest;
 import com.undangan.online.dto.SystemParameterDto;
 import com.undangan.online.service.SystemParameterService;
@@ -24,59 +25,61 @@ public class SystemParameterController {
     }
 
     @GetMapping
-    public ResponseEntity<List<SystemParameterDto>> list(
+    public ResponseEntity<ApiResponse<List<SystemParameterDto>>> list(
             @RequestParam(required = false) String groupCode,
             @RequestParam(required = false) String status,
             @RequestParam(required = false) String search) {
-        return ResponseEntity.ok(systemParameterService.listAll(groupCode, status, search));
+        return ResponseEntity.ok(ApiResponse.ok(systemParameterService.listAll(groupCode, status, search)));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<SystemParameterDto> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(systemParameterService.getById(id));
+    public ResponseEntity<ApiResponse<SystemParameterDto>> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(ApiResponse.ok(systemParameterService.getById(id)));
     }
 
     @GetMapping("/group/{groupCode}")
-    public ResponseEntity<List<SystemParameterDto>> getByGroup(@PathVariable String groupCode) {
-        return ResponseEntity.ok(systemParameterService.getByGroup(groupCode));
+    public ResponseEntity<ApiResponse<List<SystemParameterDto>>> getByGroup(@PathVariable String groupCode) {
+        return ResponseEntity.ok(ApiResponse.ok(systemParameterService.getByGroup(groupCode)));
     }
 
     @GetMapping("/{groupCode}/{code}/value")
-    public ResponseEntity<SystemParameterDto> getValue(@PathVariable String groupCode, @PathVariable String code) {
-        return ResponseEntity.ok(systemParameterService.getValue(groupCode, code));
+    public ResponseEntity<ApiResponse<SystemParameterDto>> getValue(@PathVariable String groupCode, @PathVariable String code) {
+        return ResponseEntity.ok(ApiResponse.ok(systemParameterService.getValue(groupCode, code)));
     }
 
     @PostMapping
-    public ResponseEntity<SystemParameterDto> create(@Valid @RequestBody CreateSystemParameterRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(systemParameterService.create(request));
+    public ResponseEntity<ApiResponse<SystemParameterDto>> create(@Valid @RequestBody CreateSystemParameterRequest request) {
+        SystemParameterDto created = systemParameterService.create(request);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.created("Parameter berhasil dibuat", created));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<SystemParameterDto> update(@PathVariable Long id,
+    public ResponseEntity<ApiResponse<SystemParameterDto>> update(@PathVariable Long id,
                                                      @Valid @RequestBody CreateSystemParameterRequest request) {
-        return ResponseEntity.ok(systemParameterService.update(id, request));
+        return ResponseEntity.ok(ApiResponse.ok("Parameter berhasil diupdate", systemParameterService.update(id, request)));
     }
 
     @PatchMapping("/{id}/status")
-    public ResponseEntity<SystemParameterDto> updateStatus(@PathVariable Long id,
-                                                            @RequestBody Map<String, String> body) {
+    public ResponseEntity<ApiResponse<SystemParameterDto>> updateStatus(@PathVariable Long id,
+                                                             @RequestBody Map<String, String> body) {
         String status = body.get("status");
-        return ResponseEntity.ok(systemParameterService.updateStatus(id, status));
+        return ResponseEntity.ok(ApiResponse.ok("Status parameter berhasil diupdate", systemParameterService.updateStatus(id, status)));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
         systemParameterService.delete(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(ApiResponse.ok("Parameter berhasil dihapus", null));
     }
 
     @PatchMapping("/batch-status")
-    public ResponseEntity<Map<String, Object>> batchUpdateStatus(@RequestBody List<Map<String, Object>> updates) {
-        return ResponseEntity.ok(systemParameterService.batchUpdateStatus(updates));
+    public ResponseEntity<ApiResponse<Map<String, Object>>> batchUpdateStatus(@RequestBody List<Map<String, Object>> updates) {
+        return ResponseEntity.ok(ApiResponse.ok(systemParameterService.batchUpdateStatus(updates)));
     }
 
     @PostMapping("/seed")
-    public ResponseEntity<Map<String, Object>> seed() {
-        return ResponseEntity.ok(systemParameterService.seedDefaultParameters());
+    public ResponseEntity<ApiResponse<Map<String, Object>>> seed() {
+        return ResponseEntity.ok(ApiResponse.ok("Default parameters seeded", systemParameterService.seedDefaultParameters()));
     }
 }

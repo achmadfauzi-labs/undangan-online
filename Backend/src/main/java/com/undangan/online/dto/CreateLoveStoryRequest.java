@@ -9,9 +9,11 @@ public class CreateLoveStoryRequest {
     @Size(max = 150, message = "Judul maksimal 150 karakter")
     private String title;
 
+    @NotNull(message = "Tanggal cerita wajib diisi")
     private java.time.LocalDate storyDate;
 
     @NotBlank(message = "Deskripsi wajib diisi")
+    @Size(max = 2000, message = "Deskripsi maksimal 2000 karakter")
     private String description;
 
     @NotNull(message = "Sort order wajib diisi")

@@ -1,16 +1,15 @@
 package com.undangan.online.controller;
 
-import com.undangan.online.dto.GuestbookModerationDto;
+import com.undangan.online.dto.ApiResponse;
 import com.undangan.online.dto.GuestbookEntryDto;
+import com.undangan.online.dto.GuestbookModerationDto;
 import com.undangan.online.service.ClientGuestbookService;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/client/guestbook")
@@ -24,26 +23,26 @@ public class ClientGuestbookController {
     }
 
     @GetMapping
-    public ResponseEntity<List<GuestbookEntryDto>> list(
+    public ResponseEntity<ApiResponse<List<GuestbookEntryDto>>> list(
             @RequestParam(required = false) Boolean isPublished,
             @RequestParam(required = false) String search) {
-        return ResponseEntity.ok(clientGuestbookService.listEntries(isPublished, search));
+        return ResponseEntity.ok(ApiResponse.ok("Berhasil mengambil data", clientGuestbookService.listEntries(isPublished, search)));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<GuestbookEntryDto> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(clientGuestbookService.getEntry(id));
+    public ResponseEntity<ApiResponse<GuestbookEntryDto>> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(ApiResponse.ok(clientGuestbookService.getEntry(id)));
     }
 
     @PatchMapping("/{id}/reply")
-    public ResponseEntity<GuestbookEntryDto> reply(@PathVariable Long id,
-                                                   @Valid @RequestBody GuestbookModerationDto request) {
-        return ResponseEntity.ok(clientGuestbookService.replyToEntry(id, request));
+    public ResponseEntity<ApiResponse<GuestbookEntryDto>> reply(@PathVariable Long id,
+                                                               @Valid @RequestBody GuestbookModerationDto request) {
+        return ResponseEntity.ok(ApiResponse.ok("Balasan berhasil disimpan", clientGuestbookService.replyToEntry(id, request)));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
         clientGuestbookService.deleteEntry(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(ApiResponse.ok("Guestbook entry berhasil dihapus", null));
     }
 }

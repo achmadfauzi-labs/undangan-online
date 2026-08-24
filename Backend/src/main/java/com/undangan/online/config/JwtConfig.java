@@ -1,9 +1,11 @@
 package com.undangan.online.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
+import org.springframework.context.annotation.Configuration;
 
-@Component
+@Configuration
+@ConfigurationPropertiesScan
 @ConfigurationProperties(prefix = "app.jwt")
 public class JwtConfig {
     private String secret;

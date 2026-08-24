@@ -6,6 +6,8 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -14,6 +16,8 @@ import java.util.Date;
 
 @Component
 public class JwtTokenProvider {
+
+    private static final Logger log = LoggerFactory.getLogger(JwtTokenProvider.class);
 
     private final JwtConfig jwtConfig;
     private final SecretKey key;
@@ -25,7 +29,7 @@ public class JwtTokenProvider {
 
     public String generateToken(String username, String role, Long clientId) {
         long now = System.currentTimeMillis();
-        return Jwts.builder()
+        String token = Jwts.builder()
                 .subject(username)
                 .claim("role", role)
                 .claim("clientId", clientId)
@@ -33,6 +37,9 @@ public class JwtTokenProvider {
                 .expiration(new Date(now + jwtConfig.getExpirationMs()))
                 .signWith(key)
                 .compact();
+
+        log.info("JWT token generated for username='{}', role='{}', clientId={}", username, role, clientId);
+        return token;
     }
 
     public boolean validateToken(String token) {
@@ -40,6 +47,7 @@ public class JwtTokenProvider {
             Jwts.parser().verifyWith(key).build().parseSignedClaims(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
+            log.warn("JWT token validation failed: {}", e.getMessage());
             return false;
         }
     }

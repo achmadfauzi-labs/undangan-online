@@ -1,7 +1,7 @@
 package com.undangan.online.controller;
 
+import com.undangan.online.dto.ApiResponse;
 import com.undangan.online.dto.RsvpSubmitRequest;
-import com.undangan.online.dto.RsvpUpdateRequest;
 import com.undangan.online.service.PublicRsvpService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -22,25 +22,26 @@ public class PublicRsvpController {
     }
 
     @PostMapping("/rsvp")
-    public ResponseEntity<Map<String, Object>> submitRsvp(@Valid @RequestBody RsvpSubmitRequest request) {
-        return ResponseEntity.ok(publicRsvpService.submitRsvp(request));
+    public ResponseEntity<ApiResponse<Map<String, Object>>> submitRsvp(@Valid @RequestBody RsvpSubmitRequest request) {
+        return ResponseEntity.ok(ApiResponse.ok("RSVP berhasil tercatat", publicRsvpService.submitRsvp(request)));
     }
 
     @GetMapping("/rsvp/{token}")
-    public ResponseEntity<Map<String, Object>> getRsvpStatus(@PathVariable String token) {
-        return ResponseEntity.ok(publicRsvpService.getRsvpStatus(token));
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getRsvpStatus(@PathVariable String token) {
+        return ResponseEntity.ok(ApiResponse.ok(publicRsvpService.getRsvpStatus(token)));
     }
 
     @PostMapping("/guestbook")
-    public ResponseEntity<Map<String, Object>> submitGuestbook(@RequestBody Map<String, String> body) {
-        String slug = body.get("slug");
-        String name = body.get("name");
-        String message = body.get("message");
-        return ResponseEntity.status(HttpStatus.CREATED).body(publicRsvpService.submitGuestbook(slug, name, message));
+    public ResponseEntity<ApiResponse<Map<String, Object>>> submitGuestbook(@RequestBody Map<String, String> body) {
+        String slug = body != null ? body.get("slug") : null;
+        String name = body != null ? body.get("name") : null;
+        String message = body != null ? body.get("message") : null;
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.created("Ucapan berhasil dikirim", publicRsvpService.submitGuestbook(slug, name, message)));
     }
 
     @GetMapping("/guestbook/{slug}")
-    public ResponseEntity<List<Map<String, Object>>> getGuestbook(@PathVariable String slug) {
-        return ResponseEntity.ok(publicRsvpService.getGuestbook(slug));
+    public ResponseEntity<ApiResponse<List<Map<String, Object>>>> getGuestbook(@PathVariable String slug) {
+        return ResponseEntity.ok(ApiResponse.ok("Daftar ucapan berhasil diambil", publicRsvpService.getGuestbook(slug)));
     }
 }
