@@ -1,6 +1,6 @@
 # Issue A — Retrofit Fase 2 (Backend Core & Auth): Fondasi Standar CLAUDE.md
 
-> **Audience:** AI agent junior (model kecil). Agent **DILARANG** menjalankan `docker`, `docker compose`, `mvn`, `npm`, atau perintah build/run/test apa pun. Tugas murni menulis/mengedit kode. Manusia yang test manual.
+> **Audience:** AI agent junior (model kecil). Agent **SELALU** menjalankan `docker`, `docker compose`, `mvn`, `npm`, atau perintah build/run/test apa pun ketika sesudah menyelesaikan issue.
 >
 > **Posisi dalam rantai retrofit:** Ini issue **PERTAMA** yang harus dikerjakan. Setelah selesai & lolos verifikasi, baru lanjut ke Issue B-1, B-2, dst (satu per satu).
 >

@@ -1,6 +1,6 @@
 # Issue B-1 — Retrofit Modul Client Management
 
-> **Audience:** AI agent junior (model kecil). Agent **DILARANG** menjalankan `docker`, `docker compose`, `mvn`, `npm`, atau perintah build/run/test apa pun. Tugas murni menulis/mengedit kode. Manusia yang test manual.
+> **Audience:** AI agent junior (model kecil). Agent **SELALU** menjalankan `docker`, `docker compose`, `mvn`, `npm`, atau perintah build/run/test apa pun ketika sesudah menyelesaikan issue.
 >
 > **Prasyarat:** Issue A (Retrofit Fase 2 Core & Auth) **HARUS sudah selesai & lolos**. Fondasi `ApiResponse<T>` dan global exception handler harus sudah ada.
 >

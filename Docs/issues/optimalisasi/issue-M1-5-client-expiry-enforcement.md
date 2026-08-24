@@ -1,6 +1,6 @@
 # Issue M-1.5 — Client Expiry Enforcement Mid-Session
 
-> **Audience:** AI agent junior (model kecil). Agent **DILARANG** menjalankan `docker`, `docker compose`, `mvn`, `npm`, atau perintah build/run/test apa pun. Tugas murni menulis/mengedit kode. Manusia yang test manual.
+> **Audience:** AI agent junior (model kecil). Agent **SELALU** menjalankan `docker`, `docker compose`, `mvn`, `npm`, atau perintah build/run/test apa pun ketika sesudah menyelesaikan issue.
 >
 > **Prasyarat:** Issue A + B-1 s/d B-8 selesai. Tidak bergantung ke issue M-1 lainnya, boleh dikerjakan kapan saja.
 

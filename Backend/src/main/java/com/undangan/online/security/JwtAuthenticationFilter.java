@@ -1,5 +1,8 @@
 package com.undangan.online.security;
 
+import com.undangan.online.entity.Client;
+import com.undangan.online.exception.AuthException;
+import com.undangan.online.repository.ClientRepository;
 import com.undangan.online.repository.UsersRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -16,6 +19,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 
 @Component
@@ -25,10 +29,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider tokenProvider;
     private final UsersRepository usersRepository;
+    private final ClientRepository clientRepository;
 
-    public JwtAuthenticationFilter(JwtTokenProvider tokenProvider, UsersRepository usersRepository) {
+    public JwtAuthenticationFilter(JwtTokenProvider tokenProvider, UsersRepository usersRepository, ClientRepository clientRepository) {
         this.tokenProvider = tokenProvider;
         this.usersRepository = usersRepository;
+        this.clientRepository = clientRepository;
     }
 
     @Override
@@ -61,6 +67,27 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             });
         }
 
+        if (clientId != null && !isPublicOrAuthEndpoint(request.getRequestURI())) {
+            validateClient(clientId);
+        }
+
         filterChain.doFilter(request, response);
+    }
+
+    private boolean isPublicOrAuthEndpoint(String requestURI) {
+        return requestURI.startsWith("/api/v1/public/") || requestURI.startsWith("/api/v1/auth/");
+    }
+
+    private void validateClient(Long clientId) {
+        Client client = clientRepository.findById(clientId)
+                .orElseThrow(() -> {
+                    log.warn("Client {} tidak ditemukan saat validasi token", clientId);
+                    return new AuthException("CLIENT_EXPIRED", "Akun tidak ditemukan", 401);
+                });
+
+        if (!"active".equals(client.getStatus()) || client.getExpiresAt().isBefore(LocalDate.now())) {
+            log.warn("Client {} sudah expired/nonaktif, request ditolak", clientId);
+            throw new AuthException("CLIENT_EXPIRED", "Akun sudah expired atau nonaktif", 401);
+        }
     }
 }

@@ -1,6 +1,6 @@
 # Issue B-2 — Retrofit Modul User & Role Management
 
-> **Audience:** AI agent junior (model kecil). Agent **DILARANG** menjalankan `docker`, `docker compose`, `mvn`, `npm`, atau perintah build/run/test apa pun. Tugas murni menulis/mengedit kode. Manusia yang test manual.
+> **Audience:** AI agent junior (model kecil). Agent **SELALU** menjalankan `docker`, `docker compose`, `mvn`, `npm`, atau perintah build/run/test apa pun ketika sesudah menyelesaikan issue.
 >
 > **Prasyarat:** Issue A (Fondasi `ApiResponse`) sudah selesai. Bisa dikerjakan paralel/independen dengan Issue B-1 (tidak ada cross-dependency modul).
 >
