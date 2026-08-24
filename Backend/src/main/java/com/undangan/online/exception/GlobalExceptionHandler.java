@@ -29,6 +29,9 @@ public class GlobalExceptionHandler {
         log.warn("AuthException on {} {}: code={}, message={}",
                 request.getMethod(), request.getRequestURI(), ex.getErrorCode(), ex.getMessage());
         ApiResponse<Object> body = ApiResponse.error(ex.getMessage());
+        if ("CLIENT_EXPIRED".equals(ex.getErrorCode())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
+        }
         return ResponseEntity.status(ex.getStatus()).body(body);
     }
 

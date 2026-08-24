@@ -1,6 +1,6 @@
 # Issue M-1.2 — JWT Refresh Token
 
-> **Audience:** AI agent junior (model kecil). Agent **DILARANG** menjalankan `docker`, `docker compose`, `mvn`, `npm`, atau perintah build/run/test apa pun. Tugas murni menulis/mengedit kode. Manusia yang test manual.
+> **Audience:** AI agent junior (model kecil). Agent **SELALU** menjalankan `docker`, `docker compose`, `mvn`, `npm`, atau perintah build/run/test apa pun ketika sesudah menyelesaikan issue.
 >
 > **Prasyarat:** Issue A + B-1 s/d B-8 selesai. M-1.1 disarankan selesai lebih dulu (tidak wajib, file tidak saling dependen).
 

@@ -1,53 +1,50 @@
-import { useEffect, useState } from 'react'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router';
+import { AuthProvider } from './contexts/AuthContext';
+import { ApiProvider } from './contexts/ApiContext';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8083'
+// Layouts
+import { AdminLayout } from './layouts/AdminLayout';
+import { ClientLayout } from './layouts/ClientLayout';
+
+// Pages
+import { LoginPage } from './pages/LoginPage';
+import { AdminDashboardPage } from './pages/admin/DashboardPage';
+import { ClientsPage } from './pages/admin/ClientsPage';
+import { ClientDashboardPage } from './pages/client/DashboardPage';
+import { ClientInvitationPage } from './pages/client/InvitationPage';
+import { PublicInvitationPage } from './pages/public/InvitationPage';
 
 function App() {
-  const [status, setStatus] = useState('loading')
-  const [error, setError] = useState(null)
-
-  useEffect(() => {
-    fetch(API_BASE + '/actuator/health')
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error(`HTTP ${res.status}`)
-        }
-        return res.json()
-      })
-      .then((data) => {
-        setStatus(data.status || 'UNKNOWN')
-        setError(null)
-      })
-      .catch((err) => {
-        setStatus('DOWN')
-        setError(err.message)
-      })
-  }, [])
-
-  let statusText = ''
-  let statusColor = ''
-
-  if (status === 'loading') {
-    statusText = 'Loading...'
-    statusColor = '#666666'
-  } else if (status === 'UP') {
-    statusText = 'Status: UP'
-    statusColor = '#28a745'
-  } else {
-    statusText = error
-      ? `Status: DOWN — ${error}`
-      : 'Status: DOWN'
-    statusColor = '#dc3545'
-  }
-
   return (
-    <div className="app">
-      <h1>Undangan Online — Dev (Fase 0)</h1>
-      <p className="status" style={{ color: statusColor }}>
-        {statusText}
-      </p>
-    </div>
-  )
+    <BrowserRouter>
+      <ApiProvider>
+        <AuthProvider>
+          <Routes>
+            {/* Public */}
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/undangan/:slug" element={<PublicInvitationPage />} />
+
+            {/* Admin routes — wrapped in AdminLayout */}
+            <Route element={<AdminLayout />}>
+              <Route index element={<Navigate to="/admin/dashboard" replace />} />
+              <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
+              <Route path="/admin/clients" element={<ClientsPage />} />
+            </Route>
+
+            {/* Client routes — wrapped in ClientLayout */}
+            <Route element={<ClientLayout />}>
+              <Route index element={<Navigate to="/client/dashboard" replace />} />
+              <Route path="/client/dashboard" element={<ClientDashboardPage />} />
+              <Route path="/client/invitation" element={<ClientInvitationPage />} />
+            </Route>
+
+            {/* Catch-all redirect */}
+            <Route path="*" element={<Navigate to="/login" replace />} />
+          </Routes>
+        </AuthProvider>
+      </ApiProvider>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;

@@ -1,6 +1,6 @@
 # Issue M-1.1 — Database Audit Trail
 
-> **Audience:** AI agent junior (model kecil). Agent **DILARANG** menjalankan `docker`, `docker compose`, `mvn`, `npm`, atau perintah build/run/test apa pun. Tugas murni menulis/mengedit kode. Manusia yang test manual.
+> **Audience:** AI agent junior (model kecil). Agent **SELALU** menjalankan `docker`, `docker compose`, `mvn`, `npm`, atau perintah build/run/test apa pun ketika sesudah menyelesaikan issue.
 >
 > **Prasyarat:** Issue A + semua issue B-1 s/d B-8 selesai. Kerjakan ini SEBELUM M-1.2/M-1.3/M-1.4 (issue ini membuat 2 utility class yang dipakai ulang oleh issue lain).
 

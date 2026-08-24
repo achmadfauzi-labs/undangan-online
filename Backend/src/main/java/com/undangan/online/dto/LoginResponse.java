@@ -5,13 +5,19 @@ public class LoginResponse {
     private String tokenType;
     private long expiresIn;
     private UserDto user;
+    private String refreshToken;
+    private long refreshExpiresIn;
 
-    public LoginResponse(String accessToken, String tokenType, long expiresIn, UserDto user) {
+    public LoginResponse(String accessToken, String tokenType, long expiresIn, UserDto user, String refreshToken, long refreshExpiresIn) {
         this.accessToken = accessToken;
         this.tokenType = tokenType;
         this.expiresIn = expiresIn;
         this.user = user;
+        this.refreshToken = refreshToken;
+        this.refreshExpiresIn = refreshExpiresIn;
     }
+
+    // DOCKER_TEST_MARKER_12345
 
     public String getAccessToken() {
         return accessToken;
@@ -43,5 +49,21 @@ public class LoginResponse {
 
     public void setUser(UserDto user) {
         this.user = user;
+    }
+
+    public String getRefreshToken() {
+        return refreshToken;
+    }
+
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
+
+    public long getRefreshExpiresIn() {
+        return refreshExpiresIn;
+    }
+
+    public void setRefreshExpiresIn(long refreshExpiresIn) {
+        this.refreshExpiresIn = refreshExpiresIn;
     }
 }
